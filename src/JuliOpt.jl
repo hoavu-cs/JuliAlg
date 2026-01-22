@@ -5,8 +5,8 @@ export bin_packing,
        ptas_knapsack,
        weighted_interval_scheduling
 
-include("solvers/knapsack.jl")
-include("solvers/bin_packing.jl")
-include("solvers/interval_scheduling.jl")
+include("algorithms/knapsack.jl")
+include("algorithms/bin_packing.jl")
+include("algorithms/interval_scheduling.jl")
 
 end
