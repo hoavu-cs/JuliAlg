@@ -5,8 +5,8 @@ using OffsetArrays
 
     Exact value-based 0/1 knapsack.
     Returns the maximum achievable value within capacity `W`
-    and the indices of the selected items.
-    Time/space complexity: `O(n * sum(values))`.
+    and the indices of the selected items. 
+    Time/space complexity: `O(n * sum(values))`.  
 """
 function exact_knapsack(W::Int64, weights::Vector{Int64}, values::Vector{Int64})
     n = length(weights)
