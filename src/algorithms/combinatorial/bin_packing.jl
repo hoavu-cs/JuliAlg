@@ -1,6 +1,12 @@
 using DataStructures
 using DataStructures: SortedDict
 
+"""
+    Best-Fit Decreasing Bin Packing.
+    Given item sizes and bin capacity,
+    returns the number of bins used and the indices of items in each bin.
+    Time complexity: `O(n log n)`.
+"""
 function bin_packing(items::AbstractVector{Int64}, bin_capacity::Int64)
     n = length(items)
     if n == 0

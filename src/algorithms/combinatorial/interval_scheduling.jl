@@ -1,5 +1,11 @@
 using OffsetArrays
 
+"""
+    Weighted Interval Scheduling.
+    Given start times, end times, and weights of jobs,
+    returns the maximum achievable weight and the indices of the selected jobs.
+    Time complexity: `O(n log n)`.
+"""
 function weighted_interval_scheduling(start_times::Vector{Int64}, end_times::Vector{Int64}, weights::Vector{Int64})
     jobs = [(i, start_times[i], end_times[i], weights[i]) for i in 1:length(start_times)]
     n = length(jobs)
