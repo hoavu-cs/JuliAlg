@@ -57,4 +57,4 @@ function weighted_interval_scheduling(start_times::Vector{Int64}, end_times::Vec
     return dp[n], S
 end
 
-# precompile(weighted_interval_scheduling, (Vector{Int64}, Vector{Int64}, Vector{Int64}))
+precompile(weighted_interval_scheduling, (Vector{Int64}, Vector{Int64}, Vector{Int64}))

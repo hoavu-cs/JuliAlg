@@ -64,4 +64,4 @@ function bin_packing(items::AbstractVector{Int64}, bin_capacity::Int64)
     return length(bins), bins
 end
 
-# precompile(bin_packing, (Vector{Int64}, Int64))
+precompile(bin_packing, (Vector{Int64}, Int64))

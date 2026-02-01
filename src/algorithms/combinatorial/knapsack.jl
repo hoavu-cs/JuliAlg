@@ -80,5 +80,5 @@ function ptas_knapsack(W::Int64, epsilon::Float64, weights::AbstractVector{Int64
     return actual_value, items
 end
 
-# precompile(exact_knapsack, (Int64, Vector{Int64}, Vector{Int64}))
-# precompile(ptas_knapsack, (Int64, Float64, Vector{Int64}, Vector{Int64}))
+precompile(exact_knapsack, (Int64, Vector{Int64}, Vector{Int64}))
+precompile(ptas_knapsack, (Int64, Float64, Vector{Int64}, Vector{Int64}))
