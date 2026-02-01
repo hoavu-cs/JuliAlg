@@ -11,23 +11,23 @@ using OffsetArrays
 function exact_knapsack(W::Int64, weights::Vector{Int64}, values::Vector{Int64})
     n = length(weights)
     V = sum(values)
-    INF = div(typemax(Int64), 2)
+    INF = typemax(Int64) ÷ 2
     
     dp = OffsetArray(fill(INF, n + 1, V + 1), 0:n, 0:V)
     dp[0, 0] = 0
     
-    for i in 1:n
+    for i ∈ 1:n
         wi = weights[i]
         vi = values[i]
-        for v in 0:V
+        for v ∈ 0:V
             dp[i, v] = dp[i - 1, v]  # not take
-            if vi <= v
+            if vi ≤ v
                 dp[i, v] = min(dp[i, v], dp[i - 1, v - vi] + wi)
             end
         end
     end
     
-    best_v = findlast(v -> dp[n, v] <= W, 0:V)
+    best_v = findlast(v -> dp[n, v] ≤ W, 0:V)
     best_v = isnothing(best_v) ? 0 : best_v - 1  # adjust for 0-indexing
     
     # Backtrack
@@ -35,7 +35,7 @@ function exact_knapsack(W::Int64, weights::Vector{Int64}, values::Vector{Int64})
     i, v = n, best_v
     while i > 0 && v > 0
         wi, vi = weights[i], values[i]
-        if vi <= v && dp[i, v] == dp[i - 1, v - vi] + wi
+        if vi ≤ v && dp[i, v] == dp[i - 1, v - vi] + wi
             push!(items, i)
             v -= vi
         end
