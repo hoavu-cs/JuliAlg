@@ -14,8 +14,9 @@ function simulate_ic(
 )
 
     total_activated = 0
+    results = Vector{Int}(undef, n_simulations)
     
-    for _ ∈ 1:n_simulations
+    Threads.@threads for i ∈ 1:n_simulations
         activated = Set(seed_set)
         newly_activated = Set(seed_set)
 
@@ -33,10 +34,10 @@ function simulate_ic(
             union!(activated, newly_activated)
         end
 
-        total_activated += length(activated)
+        results[i] = length(activated)
     end
 
-    return total_activated / n_simulations
+    return sum(results) / n_simulations
 end
 
 
@@ -44,6 +45,8 @@ end
     Influence Maximization in Directed Graphs in the Independent Cascade Model.
     Given a directed graph `g`, edge influence probabilities `weights`,
     and a budget `k`, selects `k` nodes to maximize the expected spread of influence.
+    n_simulations_small is used for a quick estimate of marginal gain during the greedy selection,
+    while n_simulations is used for a more accurate estimate of the final spread.
     Returns a ≈ (1 - 1/e) approximate solution using a greedy algorithm.
 """
 function influence_maximization_ic(
@@ -60,7 +63,9 @@ function influence_maximization_ic(
     remaining = Set(1:n)
 
     for _ ∈ 1:min(k, n)
-        isempty(remaining) && break
+        if isempty(remaining)
+            break
+        end
 
         u = -1
         Δ = -Inf
