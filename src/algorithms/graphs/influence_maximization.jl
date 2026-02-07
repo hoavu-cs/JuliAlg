@@ -50,6 +50,7 @@ function influence_maximization_ic(
     g::SimpleDiGraph,
     weights::Dict{Tuple{Int, Int}, Float64},
     k::Int,
+    n_simulations_small::Int = 1_000,   
     n_simulations::Int = 10_000
 )
 
@@ -63,16 +64,15 @@ function influence_maximization_ic(
 
         u = -1
         Δ = -Inf
-        t = max(1, n_simulations ÷ 10)
 
         for v ∈ remaining
             push!(solution, v)
 
-            gain_fast = simulate_ic(g, weights, solution, t) - current_spread
-            if gain_fast > Δ
-                gain_full = simulate_ic(g, weights, solution, n_simulations) - current_spread
-                if gain_full > Δ
-                    Δ = gain_full
+            gain_small_sim = simulate_ic(g, weights, solution, n_simulations_small) - current_spread
+            if gain_small_sim > Δ
+                gain_large_sim = simulate_ic(g, weights, solution, n_simulations) - current_spread
+                if gain_large_sim > Δ
+                    Δ = gain_large_sim
                     u = v
                 end
             end
@@ -90,12 +90,13 @@ function influence_maximization_ic(
     return solution, final_spread
 end
 
-precompile(
-    influence_maximization_ic, 
-    (SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Int, Int)
-)
 
 precompile(
     simulate_ic, 
     (SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Vector{Int}, Int)
+)
+
+precompile(
+    influence_maximization_ic, 
+    (SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Int, Int, Int)
 )

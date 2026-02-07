@@ -19,9 +19,9 @@ function weighted_interval_scheduling(start_times::Vector{Int64}, end_times::Vec
         e = i - 1
         pi = 0
         # binary search for the rightmost job that ends before jobs[i] starts
-        while s <= e 
+        while s ≤ e 
             m = div(s + e, 2)
-            if jobs[m][3] <= jobs[i][2]
+            if jobs[m][3] ≤ jobs[i][2]
                 pi = m
                 s = m + 1
             else
@@ -42,10 +42,10 @@ function weighted_interval_scheduling(start_times::Vector{Int64}, end_times::Vec
     # Reconstruct solution
     S = Int64[]
     i = n
-    while i >= 1 
+    while i ≥ 1 
         take = dp[p[i]] + jobs[i][4]
         skip = dp[i-1]
-        if take >= skip
+        if take ≥ skip
             push!(S, jobs[i][1])
             i = p[i]
         else
