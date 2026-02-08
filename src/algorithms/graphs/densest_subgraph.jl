@@ -53,10 +53,10 @@ end
 """
 Goldberg algorithm for densest subgraph. 
 
-Returns (bestS, bestλ, best_density_est)
-- bestS: vertex ids (1..n) of the best subgraph found
-- bestλ: last feasible λ from the search
-- best_density_est: density(bestS) = |E(S)|/|S|
+Returns (best_S, best_λ, best_density_est)
+- best_S: vertex ids (1..n) of the best subgraph found
+- best_λ: last feasible λ from the search
+- best_density_est: density(best_S) = |E(S)|/|S|
 """
 function densest_subgraph(G::AbstractGraph, num_iterations::Int = 40, algorithm=:goldberg)
     n = nv(G)
@@ -65,29 +65,29 @@ function densest_subgraph(G::AbstractGraph, num_iterations::Int = 40, algorithm=
     low = 0.0
     high = maximum(degree(G)) / 2.0
 
-    bestS = collect(1:n)
-    bestλ = 0.0
+    best_S = collect(1:n)
+    best_λ = 0.0
 
     for _ ∈ 1:num_iterations
         mid = (low + high) / 2.0
 
         H, cap, s, t = create_aux_graph(G, mid)
 
-        part_S, part_T, cut_value = GraphsFlows.mincut(H, s, t, cap, PushRelabelAlgorithm())
-        S = [v for v in part_S if 1 ≤ v ≤ n]
+        part_s, part_t, cut_value = GraphsFlows.mincut(H, s, t, cap, PushRelabelAlgorithm())
+        S = [v for v in part_s if 1 ≤ v ≤ n]
 
         if cut_value ≤ 2.0 * m + 1e-9
             low = mid
-            bestλ = mid
+            best_λ = mid
             if !isempty(S)
-                bestS = S
+                best_S = S
             end
         else
             high = mid
         end
     end
 
-    return bestS, bestλ, density(G, bestS)
+    return best_S, best_λ, density(G, best_S)
 end
 
 precompile(create_aux_graph, (SimpleGraph{Int}, Float64))

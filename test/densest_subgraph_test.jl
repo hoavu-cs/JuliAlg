@@ -1,6 +1,7 @@
 using Test
 using Graphs
 using Combinatorics
+using Random
 using JuliOpt
 
 const subgraph_density = JuliOpt.density
@@ -118,6 +119,89 @@ const subgraph_density = JuliOpt.density
         S, λ, d = densest_subgraph(g)
         @test Set(S) == Set(1:5)
         @test d ≈ 2.0 atol=1e-6
+    end
+
+    @testset "K5 and K3 connected by a bridge edge" begin
+        # K5 on {1..5} (density 2.0), K3 on {6,7,8} (density 1.0)
+        # connected by edge (5,6)
+        # Whole graph: 14 edges / 8 vertices = 1.75
+        # Densest subgraph should be K5
+        g = complete_graph(5)
+        for v in 6:8
+            add_vertex!(g)
+        end
+        add_edge!(g, 6, 7)
+        add_edge!(g, 7, 8)
+        add_edge!(g, 6, 8)
+        add_edge!(g, 5, 6)  # bridge
+
+        S, λ, d = densest_subgraph(g)
+        @test Set(S) == Set(1:5)
+        @test d ≈ 2.0 atol=1e-6
+    end
+
+    @testset "K_{3,4} -- K3 -- square chain" begin
+        # K_{3,4} on {1..7}: parts {1,2,3} and {4,5,6,7}, 12 edges, density 12/7 ≈ 1.714
+        # K3 on {8,9,10}: 3 edges, density 1.0
+        # Square on {11,12,13,14}: 4 edges, density 1.0
+        # Bridges: (7,8) and (10,11)
+        # Whole graph: 21 edges / 14 vertices = 1.5
+        # Densest subgraph should be K_{3,4}
+        g = SimpleGraph(14)
+        for a in 1:3, b in 4:7
+            add_edge!(g, a, b)
+        end
+        add_edge!(g, 8, 9)
+        add_edge!(g, 9, 10)
+        add_edge!(g, 8, 10)
+        add_edge!(g, 11, 12)
+        add_edge!(g, 12, 13)
+        add_edge!(g, 13, 14)
+        add_edge!(g, 14, 11)
+        add_edge!(g, 7, 8)   # bridge K_{3,4} -- K3
+        add_edge!(g, 10, 11)  # bridge K3 -- square
+
+        # Brute force verification
+        best_d = 0.0
+        for k in 1:nv(g)
+            for subset in combinations(1:nv(g), k)
+                d = subgraph_density(g, subset)
+                best_d = max(best_d, d)
+            end
+        end
+
+        S, λ, d = densest_subgraph(g)
+        @test Set(S) == Set(1:7)
+        @test d ≈ 12.0 / 7.0 atol=1e-6
+        @test d ≈ best_d atol=1e-6
+    end
+
+    @testset "random G(1000, 0.01) with planted K10" begin
+        Random.seed!(42)
+        n = 1000
+        p = 0.01
+        clique_vertices = 1:10
+
+        g = SimpleGraph(n)
+        for i in 1:n, j in (i+1):n
+            if rand() < p
+                add_edge!(g, i, j)
+            end
+        end
+
+        # Plant K10 on vertices 1..10
+        for i in clique_vertices, j in clique_vertices
+            i < j && add_edge!(g, i, j)
+        end
+
+        S, λ, d = densest_subgraph(g)
+
+        # Returned density must match the density helper
+        @test d ≈ subgraph_density(g, S) atol=1e-6
+        # Must be at least as dense as the planted K10
+        @test d ≥ subgraph_density(g, collect(clique_vertices)) - 1e-6
+        # The planted clique should be fully contained in the densest subgraph
+        @test issubset(Set(clique_vertices), Set(S))
     end
 
     @testset "brute force verification: small graph" begin
