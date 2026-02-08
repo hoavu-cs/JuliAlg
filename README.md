@@ -2,7 +2,7 @@
 
 A Julia package for combinatorial optimization and graph algorithms. Implements exact, approximate, and heuristic solutions for classic problems in optimization and network analysis.
 
-Claude is often used to generate test cases and some documentation, but the core algorithms and implementations are written by the author. 
+Claude is often used to generate test cases and some documentation, but the core algorithms and implementations are mostly written and optimized by the author. 
 
 ## Installation
 
