@@ -8,4 +8,5 @@ using JuliOpt
     include("influence_maximization_test.jl")
     include("set_cover_test.jl")
     include("max_coverage_test.jl")
+    include("densest_subgraph_test.jl")
 end
