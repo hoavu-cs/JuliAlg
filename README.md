@@ -41,6 +41,7 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
 | `influence_maximization_ic(g, weights, k)` | Influence Maximization | Greedy + Monte Carlo IC | (1 - 1/e)-approx |
 | `simulate_ic(g, weights, seed_set)` | IC Spread Estimation | Monte Carlo simulation | - |
 | `densest_subgraph(G)` | Densest Subgraph | Goldberg's algorithm (binary search + max-flow) | Exact |
+| `densest_subgraph_peeling(G)` | Densest Subgraph | Charikar's peeling algorithm | 1/2-approx |
 | `densest_at_most_k_subgraph(G, k)` | Densest At-Most-k Subgraph | Degree-based pruning + brute force | Heuristic |
 
 ## Usage
