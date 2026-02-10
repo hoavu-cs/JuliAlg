@@ -1,5 +1,6 @@
 using Graphs, GraphsFlows
 using Combinatorics
+using SparseArrays
 
 """
     Create auxiliary graph H for the Goldberg algorithm.
@@ -11,7 +12,7 @@ function create_aux_graph(G::AbstractGraph, λ::Float64)
     t = n + 2
 
     H = DiGraph(N)
-    cap = zeros(Float64, N, N)
+    cap = spzeros(Float64, N, N)
 
     for v ∈ 1:n
         add_edge!(H, s, v)

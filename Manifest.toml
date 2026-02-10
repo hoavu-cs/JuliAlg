@@ -2,7 +2,7 @@
 
 julia_version = "1.12.4"
 manifest_format = "2.0"
-project_hash = "9f2aa09b69399fb54888c24e9e33db7b4de6ee96"
+project_hash = "9d5ff32e64f19fc208a3381aedae7227334b0ef6"
 
 [[deps.ArnoldiMethod]]
 deps = ["LinearAlgebra", "Random", "StaticArrays"]
@@ -186,7 +186,7 @@ version = "1.29.4"
     DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
 
 [[deps.JuliOpt]]
-deps = ["Combinatorics", "DataStructures", "Graphs", "OffsetArrays", "Revise"]
+deps = ["Combinatorics", "DataStructures", "Graphs", "GraphsFlows", "OffsetArrays", "Revise", "SparseArrays"]
 path = "."
 uuid = "34f9d4c9-18ae-4c05-bb30-62f66462ffc3"
 version = "1.0.0-DEV"
