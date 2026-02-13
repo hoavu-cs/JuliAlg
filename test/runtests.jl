@@ -9,4 +9,5 @@ using JuliOpt
     include("set_cover_test.jl")
     include("max_coverage_test.jl")
     include("densest_subgraph_test.jl")
+    include("k_core_test.jl")
 end
