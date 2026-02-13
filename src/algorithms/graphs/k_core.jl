@@ -1,9 +1,11 @@
 using Graphs
 
 """
-    k_core(g::AbstractGraph, k::Int)
-    Returns the k-core decompositions.
-    The k-core of a graph is the maximal subgraph in which every vertex has degree at least k.
+    k_core_decomposition(G::AbstractGraph)
+
+    Returns a Dict mapping each vertex to its core number.
+    The core number of a vertex v is the largest k such that v belongs to a k-core,
+    where the k-core is the maximal subgraph in which every vertex has degree at least k.
 """
 function k_core_decomposition(G::AbstractGraph)
     if nv(G) == 0
