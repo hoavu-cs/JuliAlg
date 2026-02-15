@@ -2,7 +2,7 @@
 
 A Julia package for combinatorial optimization and graph algorithms. Implements exact, approximate, and heuristic solutions for classic problems in optimization and network analysis. We aim to implement algorithms that are theoretically sound, practical, and those that require more understanding or optimization. 
 
-Claude is often used to generate test cases and some documentation, but the core algorithms and implementations are mostly written and optimized by the author. 
+Claude Code / DeepSeek + Cline is often used to generate test cases and some documentation. The core algorithms and implementations are mostly written and optimized by the author. 
 
 There are some NP-Hard problems with no known polynomial-time approximation. For these, we try to come up with heuristics that help reduce the search space (such as in densest at-most-k-subgraph). Some are dealt with using parameterization. 
 
