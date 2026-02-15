@@ -151,8 +151,6 @@ julia --threads=auto --project -e 'using Pkg; Pkg.test()'
 
 ## Benchmarks for Thread Scaling
 
-### Influence Maximization
-
 | Threads | Median (ms) | Min (ms) | Speedup |
 |---------|-------------|----------|---------|
 | 1       | 7,111       | 7,095    | 1.0x    |
@@ -160,19 +158,9 @@ julia --threads=auto --project -e 'using Pkg; Pkg.test()'
 | 4       | 2,006       | 1,994    | 3.5x    |
 | 8       | 1,695       | 1,578    | 4.2x    |
 
-### PageRank
-
-| Threads | Median (ms) | Min (ms) | Speedup |
-|---------|-------------|----------|---------|
-| 1       | 276         | 266      | 1.0x    |
-| 2       | 307         | 269      | 1.0x    |
-| 4       | 275         | 267      | 1.0x    |
-| 8       | 281         | 271      | 1.0x    |
-
 ```bash
 # Run benchmarks
 julia --project benchmarks/influence_maximization_bench.jl
-julia --project benchmarks/pagerank_bench.jl
 ```
 
 ## Dependencies

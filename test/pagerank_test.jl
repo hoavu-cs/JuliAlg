@@ -286,4 +286,23 @@ end
         expected = pagerank_ground_truth(g, weights=weights)
         @test r ≈ expected atol=1e-5
     end
+
+    @testset "Large sparse graph (2000 nodes, 1000 edges)" begin
+        import Random
+        Random.seed!(42)
+        g = SimpleDiGraph(10000)
+        edges_added = 0
+        while edges_added < 100000
+            u, v = rand(1:10000), rand(1:10000)
+            if u != v && !has_edge(g, u, v)
+                add_edge!(g, u, v)
+                edges_added += 1
+            end
+        end
+
+        r = JuliOpt.pagerank(g, tol=1e-8, maxiter=200)
+        @test length(r) == 10000
+        @test sum(r) ≈ 1.0 atol=1e-4
+        @test all(r .>= 0.0)
+    end
 end

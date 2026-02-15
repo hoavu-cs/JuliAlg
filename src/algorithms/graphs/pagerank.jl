@@ -92,7 +92,7 @@ function pagerank(
         base = (1.0 - α) / n + α * dangling_sum / n
 
         # Each node u pulls rank from its in-neighbors
-        Threads.@threads for u in 1:n
+        for u in 1:n
             rank = base
             for v in inneighbors(G, u)
                 if has_outgoing[v]
