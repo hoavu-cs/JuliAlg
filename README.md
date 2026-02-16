@@ -50,6 +50,7 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
 | `densest_subgraph_peeling(G)` | Densest Subgraph | Charikar's peeling algorithm | 1/2-approx |
 | `densest_at_most_k_subgraph(G, k)` | Densest At-Most-k Subgraph | Degree-based pruning + brute force | Heuristic |
 | `k_core_decomposition(G)` | K-Core Decomposition | Iterative peeling | Exact, O(m) |
+| `bw_centrality(G; weights)` | Betweenness Centrality | Brandes' algorithm (BFS / Dijkstra) | Exact, O(nm) / O(nm + n² log n) |
 
 ## Usage
 
@@ -191,12 +192,22 @@ julia --threads=auto --project -e 'using Pkg; Pkg.test()'
 | 4       | 2,284       | 2,230    | 1.9x    |
 | 8       | 2,040       | 2,021    | 2.1x    |
 
+### Betweenness Centrality
+
+| Threads | Median (ms) | Min (ms) | Speedup |
+|---------|-------------|----------|---------|
+| 1       | 15,739      | 14,430   | 1.0x    |
+| 2       | 7,571       | 7,288    | 2.0x    |
+| 4       | 3,675       | 3,454    | 4.2x    |
+| 8       | 3,745       | 3,300    | 4.4x    |
+
 ```bash
 # Run benchmarks
 julia --project benchmarks/influence_maximization_bench.jl
 julia --project benchmarks/pagerank_bench.jl
 julia --project benchmarks/set_cover_bench.jl
 julia --project benchmarks/max_coverage_bench.jl
+julia --project benchmarks/centrality_bench.jl
 ```
 
 ## Dependencies

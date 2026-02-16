@@ -11,4 +11,5 @@ using JuliAlg
     include("densest_subgraph_test.jl")
     include("k_core_test.jl")
     include("pagerank_test.jl")
+    include("centrality_test.jl")
 end

@@ -10,7 +10,8 @@ export bin_packing,
        max_coverage,
        densest_subgraph,
        k_core_decomposition,
-       pagerank
+       pagerank,
+       bw_centrality
 
 include("algorithms/combinatorial/knapsack.jl")
 include("algorithms/combinatorial/bin_packing.jl")
@@ -21,5 +22,6 @@ include("algorithms/combinatorial/max_coverage.jl")
 include("algorithms/graphs/densest_subgraph.jl")
 include("algorithms/graphs/k_core.jl")
 include("algorithms/graphs/pagerank.jl")
+include("algorithms/graphs/centrality.jl")
 
 end
