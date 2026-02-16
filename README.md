@@ -1,4 +1,4 @@
-# JuliOpt
+# JuliAlg
 
 A Julia package for combinatorial optimization and graph algorithms. It contains implementation of exact, approximate, and heuristic solutions for classic problems in optimization and network analysis. I aim to implement every  algorithms that I can get a good grasp of that are 
 - theoretically sound
@@ -16,14 +16,14 @@ The goal is to use this package internally for my other projects, but I would al
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/<owner>/JuliOpt.jl")
+Pkg.add(url="https://github.com/<owner>/JuliAlg.jl")
 ```
 
 Or for local development:
 
 ```bash
 git clone <repo-url>
-cd JuliOpt
+cd JuliAlg
 julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
 
@@ -58,7 +58,7 @@ All algorithms return a tuple of `(objective_value, selected_items)`.
 ### Knapsack
 
 ```julia
-using JuliOpt
+using JuliAlg
 
 W = 10
 weights = [2, 3, 4, 5]
@@ -111,7 +111,7 @@ covered, selected = max_coverage(subsets, Int64(k))
 ### Influence Maximization
 
 ```julia
-using Graphs, JuliOpt
+using Graphs, JuliAlg
 
 g = SimpleDiGraph(5)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3)
@@ -126,7 +126,7 @@ seeds, spread = influence_maximization_ic(g, weights, k)
 ### Densest Subgraph
 
 ```julia
-using Graphs, JuliOpt
+using Graphs, JuliAlg
 
 g = complete_graph(5)
 add_vertex!(g)
@@ -136,7 +136,7 @@ S, density = densest_subgraph(g)
 # S = [1, 2, 3, 4, 5], density = 2.0
 
 # Densest subgraph with at most k vertices
-S, d = JuliOpt.densest_at_most_k_subgraph(g, 3)
+S, d = JuliAlg.densest_at_most_k_subgraph(g, 3)
 # Finds the 3-vertex subset with highest density
 ```
 
@@ -147,7 +147,7 @@ S, d = JuliOpt.densest_at_most_k_subgraph(g, 3)
 julia --project -e 'using Pkg; Pkg.test()'
 
 # Run a single test file
-julia --project -e 'using JuliOpt; using Test; include("test/knapsack_test.jl")'
+julia --project -e 'using JuliAlg; using Test; include("test/knapsack_test.jl")'
 
 # With threads (needed for influence maximization)
 julia --threads=auto --project -e 'using Pkg; Pkg.test()'

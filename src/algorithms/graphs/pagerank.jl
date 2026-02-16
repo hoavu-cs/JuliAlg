@@ -20,7 +20,7 @@ Compute PageRank scores for vertices of graph `G`.
 
 # Examples
 ```julia
-using Graphs, JuliOpt
+using Graphs, JuliAlg
 
 # Unweighted directed graph
 g = SimpleDiGraph(3)

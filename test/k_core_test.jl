@@ -1,6 +1,6 @@
 using Test
 using Graphs
-using JuliOpt
+using JuliAlg
 
 @testset "K-Core Decomposition Tests" begin
 

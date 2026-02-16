@@ -1,6 +1,6 @@
 using Test
 using OffsetArrays
-using JuliOpt
+using JuliAlg
 
 # helper to validate correctness
 function validate_knapsack_solution(W, weights, values, chosen_idxs, opt_value)

@@ -1,7 +1,7 @@
 using Test
-using JuliOpt
+using JuliAlg
 
-@testset "JuliOpt" begin
+@testset "JuliAlg" begin
     include("knapsack_test.jl")
     include("bin_packing_test.jl")
     include("interval_scheduling_test.jl")

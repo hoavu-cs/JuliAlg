@@ -1,5 +1,5 @@
 using Test
-using JuliOpt
+using JuliAlg
 
 # helper to validate correctness
 function validate_solution(starts, ends, weights, chosen_idxs, opt)

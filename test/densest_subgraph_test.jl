@@ -2,9 +2,9 @@ using Test
 using Graphs
 using Combinatorics
 using Random
-using JuliOpt
+using JuliAlg
 
-const subgraph_density = JuliOpt.density
+const subgraph_density = JuliAlg.density
 
 @testset "Densest Subgraph Tests" begin
 
@@ -250,7 +250,7 @@ const subgraph_density = JuliOpt.density
 end
 
 @testset "Densest Subgraph Peeling Tests" begin
-    densest_peeling = JuliOpt.densest_subgraph_peeling
+    densest_peeling = JuliAlg.densest_subgraph_peeling
 
     @testset "single edge" begin
         g = SimpleGraph(2)
@@ -466,7 +466,7 @@ end
 end
 
 @testset "Densest At-Most-K Subgraph Tests" begin
-    densest_at_most_k = JuliOpt.densest_at_most_k_subgraph
+    densest_at_most_k = JuliAlg.densest_at_most_k_subgraph
 
     # Brute force reference implementation
     function bf_densest_k(G, k)

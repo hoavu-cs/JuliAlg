@@ -1,5 +1,5 @@
 using Test
-using JuliOpt
+using JuliAlg
 using Combinatorics
 
 # helper to validate a max coverage solution

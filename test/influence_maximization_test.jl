@@ -1,7 +1,7 @@
 using Test
 using Graphs
 using Combinatorics
-using JuliOpt
+using JuliAlg
 
 n_simulations = 10000
 

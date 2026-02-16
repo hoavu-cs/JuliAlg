@@ -1,5 +1,5 @@
 using Graphs, Random, Test, LinearAlgebra
-using JuliOpt
+using JuliAlg
 
 if !isempty(ARGS) && ARGS[1] == "--worker"
     println("Threads: ", Threads.nthreads())
@@ -7,7 +7,7 @@ if !isempty(ARGS) && ARGS[1] == "--worker"
     # Warmup
     g = SimpleDiGraph(3)
     add_edge!(g, 1, 2)
-    JuliOpt.pagerank(g)
+    JuliAlg.pagerank(g)
 
     times = Float64[]
     for _ in 1:5

@@ -1,5 +1,5 @@
 using Graphs, Random, Test, Combinatorics
-using JuliOpt
+using JuliAlg
 
 if !isempty(ARGS) && ARGS[1] == "--worker"
     println("Threads: ", Threads.nthreads())

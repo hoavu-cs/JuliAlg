@@ -1,5 +1,5 @@
 using Test
-using JuliOpt
+using JuliAlg
 
 # helper to validate correctness
 function validate_bin_packing(items, bin_capacity, num_bins, bins)

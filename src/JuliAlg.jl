@@ -1,4 +1,4 @@
-module JuliOpt
+module JuliAlg
 
 export bin_packing,
        exact_knapsack,
