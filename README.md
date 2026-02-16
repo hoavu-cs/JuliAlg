@@ -5,6 +5,8 @@ A Julia package for combinatorial optimization and graph algorithms. It contains
 - practical with applications in mind
 - those that require more understanding or optimization. 
 
+The goal is to use this package internally for my other projects, but I would also be happy if it can be useful to others. Pull requests and contributions are welcome. 
+
 Claude Code / DeepSeek + Cline is often used to generate test cases and some documentation. The core algorithms and implementations are mostly written and optimized by me. 
 
 There are some NP-Hard problems with no known polynomial-time approximation. For these, I try to come up with heuristics that help reduce the search space (such as in densest at-most-k-subgraph). Some are dealt with using parameterization.
