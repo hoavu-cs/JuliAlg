@@ -157,4 +157,36 @@ end
         @test greedy_covered >= (1 - 1/ℯ) * best_coverage - 1e-9
         validate_max_coverage(subsets, k, selected, greedy_covered)
     end
+
+    @testset "large instance with known optimal" begin
+        using Random
+        Random.seed!(123)
+        n = 1_000_000
+
+        # First 5 sets partition the universe with some overlap
+        s1 = collect(1:250_000)
+        s2 = collect(200_001:450_000)
+        s3 = collect(400_001:650_000)
+        s4 = collect(600_001:850_000)
+        s5 = collect(800_001:1_000_000)
+
+        # The first 5 sets cover everything; random sets cover only 20000 elements
+        # Greedy should pick the 5 large sets first
+        subsets = Vector{Vector{Int}}(undef, 1000)
+        subsets[1] = s1
+        subsets[2] = s2
+        subsets[3] = s3
+        subsets[4] = s4
+        subsets[5] = s5
+        for i in 6:1000
+            subsets[i] = sort!(unique(rand(1:n, 20000)))
+        end
+
+        k = Int64(5)
+        num_covered, selected = max_coverage(subsets, k)
+        validate_max_coverage(subsets, k, selected, num_covered)
+        # The first 5 sets cover all 1M elements
+        @test num_covered == n
+        @test sort(selected) == [1, 2, 3, 4, 5]
+    end
 end

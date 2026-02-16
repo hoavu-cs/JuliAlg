@@ -21,21 +21,16 @@ function set_cover(subsets::Vector{Vector{Int}}, costs::Vector{Float64})
     used = falses(m)
 
     while !isempty(uncovered) || count(used) == m
-        best_idx = 0
-        best_ratio = -Inf
+        ratios = zeros(m)
 
-        for i in 1:m
+        Threads.@threads for i in 1:m
             used[i] && continue
             num_newly_covered = length(uncovered ∩ subset_sets[i])
-            
-            ratio =  num_newly_covered / costs[i]
-            if num_newly_covered > 0 && ratio > best_ratio
-                best_ratio = ratio
-                best_idx = i
-            end
+            ratios[i] = num_newly_covered / costs[i]
         end
 
-        best_idx == 0 && break 
+        best_idx = argmax(ratios)
+        ratios[best_idx] <= 0.0 && break
 
         push!(selected, best_idx)
         used[best_idx] = true

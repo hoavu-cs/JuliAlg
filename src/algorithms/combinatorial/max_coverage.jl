@@ -16,19 +16,16 @@ function max_coverage(subsets::Vector{Vector{Int}}, k::Int)
     used = falses(m)
 
     for _ in 1:k
-        best_idx = 0
-        best_gain = 0
+        gains = zeros(m)
 
-        for i in 1:m
+        Threads.@threads for i in 1:m
             used[i] && continue
             gain = length(setdiff(subset_sets[i], covered))
-            if gain > best_gain
-                best_gain = gain
-                best_idx = i
-            end
+            gains[i] = gain
         end
 
-        best_idx == 0 && break
+        best_idx = argmax(gains)
+        gains[best_idx] == 0 && break
 
         push!(selected, best_idx)
         used[best_idx] = true

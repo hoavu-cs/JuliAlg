@@ -129,75 +129,41 @@ end
         validate_set_cover(subsets, costs, selected, greedy_cost)
     end
 
-    # @testset "approximation quality vs brute-force for large subsets" begin
-    #     # 1. Setup a large universe
-    #     n = 1_000_000
-    #     m = 15
-        
-    #     # Create large subsets with specific overlaps to ensure the greedy
-    #     # choice isn't just "pick the biggest one."
-    #     # We'll create a "cheap" optimal path and an "expensive" greedy trap.
-        
-    #     subsets = Vector{Vector{Int}}(undef, m)
-        
-    #     # The Optimal Path: 5 sets covering 200k each, cost 2.0 each (Total 10.0)
-    #     for i in 1:5
-    #         subsets[i] = collect(((i-1)*200_000 + 1) : (i*200_000))
-    #     end
-        
-    #     # The Greedy Trap: 1 set covering 900k elements, but cost 15.0
-    #     # It has a better initial ratio (15/900k) than the optimal sets (2/200k),
-    #     # but picking it makes the remaining 100k very expensive to cover.
-    #     subsets[6] = collect(1:900_000)
-        
-    #     # Fill remaining with random large overlaps
-    #     for i in 7:m
-    #         subsets[i] = unique(rand(1:n, 300_000))
-    #     end
-        
-    #     costs = rand(10.0:0.1:20.0, m)
-    #     costs[1:5] .= 2.0   # Optimal sets are cheap
-    #     costs[6] = 15.0     # Trap set
-        
-    #     univ_set = Set(1:n)
 
-    #     # 2. Brute Force Optimal (O(2^m))
-    #     # We use a simple loop over combinations. Since m=15, this is 32,768 iterations.
-    #     best_cost = Inf
-    #     for r in 1:m
-    #         for combo in combinations(1:m, r)
-    #             current_cost = sum(costs[i] for i in combo)
-    #             current_cost >= best_cost && continue # Pruning
-                
-    #             # Use a BitVector for the brute force coverage check for speed
-    #             check_bits = falses(n)
-    #             for idx in combo
-    #                 # Optimization: for large sets, this is the bottleneck
-    #                 for el in subsets[idx]; check_bits[el] = true; end
-    #             end
-                
-    #             if all(check_bits)
-    #                 best_cost = current_cost
-    #             end
-    #         end
-    #     end
+    @testset "large instance with known optimal" begin
+        using Random
+        Random.seed!(123)
+        n = 1_000_000
 
-    #     # 3. Run your BitVector set_cover
-    #     greedy_cost, selected = set_cover(subsets, costs)
+        # First 5 sets partition the universe with some overlap
+        s1 = collect(1:250_000)
+        s2 = collect(200_001:450_000)
+        s3 = collect(400_001:650_000)
+        s4 = collect(600_001:850_000)
+        s5 = collect(800_001:1_000_000)
 
-    #     # 4. Assertions
-    #     harmonic = sum(1.0 / k for k in 1:n)
-        
-    #     # Theoretical Check
-    #     @test greedy_cost <= (harmonic * best_cost) + 1e-9
-        
-    #     # Correctness Check
-    #     covered_check = falses(n)
-    #     for idx in selected
-    #         for el in subsets[idx]; covered_check[el] = true; end
-    #     end
-    #     @test all(covered_check)
-    # end
+        # The first 5 sets cover everything, cost 1.0 each (ratio 20k-25k per unit)
+        # Random sets cover only 20000 elements, cost 10.0 each (ratio 2000 per unit)
+        # Greedy should always prefer the first 5 sets
+        subsets = Vector{Vector{Int}}(undef, 1000)
+        subsets[1] = s1
+        subsets[2] = s2
+        subsets[3] = s3
+        subsets[4] = s4
+        subsets[5] = s5
+        for i in 6:1000
+            subsets[i] = sort!(unique(rand(1:n, 20000)))
+        end
+
+        costs = fill(10.0, 1000)
+        costs[1:5] .= 1.0
+
+        total_cost, selected = set_cover(subsets, costs)
+        validate_set_cover(subsets, costs, selected, total_cost)
+        # Optimal is the first 5 sets at cost 5.0; greedy should find this
+        @test total_cost == 5.0
+        @test sort(selected) == [1, 2, 3, 4, 5]
+    end
 
     @testset "single element per set" begin
         subsets = [Int[1], Int[2], Int[3]]

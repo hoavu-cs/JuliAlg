@@ -172,10 +172,30 @@ julia --threads=auto --project -e 'using Pkg; Pkg.test()'
 | 4       | 562.86      | 491.88   | 1.2x    |
 | 8       | 535.50      | 475.12   | 1.3x    |
 
+### Set Cover
+
+| Threads | Median (ms) | Min (ms) | Speedup |
+|---------|-------------|----------|---------|
+| 1       | 5,854       | 5,763    | 1.0x    |
+| 2       | 4,141       | 4,040    | 1.4x    |
+| 4       | 3,191       | 3,132    | 1.8x    |
+| 8       | 2,892       | 2,834    | 2.0x    |
+
+### Max Coverage
+
+| Threads | Median (ms) | Min (ms) | Speedup |
+|---------|-------------|----------|---------|
+| 1       | 4,240       | 3,963    | 1.0x    |
+| 2       | 2,945       | 2,889    | 1.4x    |
+| 4       | 2,284       | 2,230    | 1.9x    |
+| 8       | 2,040       | 2,021    | 2.1x    |
+
 ```bash
 # Run benchmarks
 julia --project benchmarks/influence_maximization_bench.jl
 julia --project benchmarks/pagerank_bench.jl
+julia --project benchmarks/set_cover_bench.jl
+julia --project benchmarks/max_coverage_bench.jl
 ```
 
 ## Dependencies
