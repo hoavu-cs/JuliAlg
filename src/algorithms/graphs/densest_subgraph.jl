@@ -60,6 +60,10 @@ end
     - best_density: density(best_S) = |E(S)|/|S|
 """
 function densest_subgraph(G::AbstractGraph, num_iterations::Int = 40, algorithm=:goldberg)
+    if is_directed(G)
+        throw(ArgumentError("densest_subgraph only supports undirected graphs"))
+    end
+
     n = nv(G)
     m = ne(G)
 
@@ -96,6 +100,10 @@ end
     1/2-approximation.
 """
 function densest_subgraph_peeling(G::AbstractGraph)
+    if is_directed(G)
+        throw(ArgumentError("densest_subgraph_peeling only supports undirected graphs"))
+    end
+
     H = copy(G)
     n = nv(H)
 
@@ -151,6 +159,10 @@ end
     subgraph H⋆.
 """
 function densest_at_most_k_subgraph(G::AbstractGraph, k::Int)
+    if is_directed(G)
+        throw(ArgumentError("densest_at_most_k_subgraph only supports undirected graphs"))
+    end
+
     n = nv(G)
     if k ≥ n
         return densest_subgraph(G)

@@ -425,4 +425,26 @@ n_simulations = 10000
         @test spread >= best_single_spread  # k nodes should beat 1 node
     end
 
+    @testset "undirected asymmetric weights are warned and averaged" begin
+        g = SimpleGraph(2)
+        add_edge!(g, 1, 2)
+
+        asymmetric_weights = Dict(
+            (1, 2) => 0.0,
+            (2, 1) => 1.0
+        )
+
+        @test_logs (:warn, r"Undirected graph has asymmetric weights") begin
+            spread = simulate_ic(g, asymmetric_weights, [1], 5000)
+            @test spread > 1.2
+            @test spread < 1.8
+        end
+
+        @test_logs (:warn, r"Undirected graph has asymmetric weights") begin
+            solution, spread = influence_maximization_ic(g, asymmetric_weights, 0, 50, 200)
+            @test solution == Int[]
+            @test spread == 0.0
+        end
+    end
+
 end

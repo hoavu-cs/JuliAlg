@@ -200,6 +200,61 @@ using JuliAlg
             @test bc ≈ [0.0, 1.0, 1.0, 0.0] atol=1e-10
         end
 
+        @testset "Asymmetric weights are averaged with warning" begin
+            g = SimpleGraph(4)
+            add_edge!(g, 1, 2)
+            add_edge!(g, 2, 3)
+            add_edge!(g, 3, 4)
+            add_edge!(g, 1, 4)
+
+            symmetric_weights = Dict(
+                (1, 2) => 2.0, (2, 1) => 2.0,
+                (2, 3) => 1.5, (3, 2) => 1.5,
+                (3, 4) => 3.0, (4, 3) => 3.0,
+                (1, 4) => 4.5, (4, 1) => 4.5
+            )
+            bc_expected = bw_centrality(g, weights=symmetric_weights, normalized=false)
+
+            asymmetric_weights = Dict(
+                (1, 2) => 1.0, (2, 1) => 3.0,
+                (2, 3) => 1.0, (3, 2) => 2.0,
+                (3, 4) => 2.0, (4, 3) => 4.0,
+                (1, 4) => 6.0, (4, 1) => 3.0
+            )
+            @test_logs (:warn, r"Undirected graph has asymmetric weights") begin
+                bc_asym = bw_centrality(g, weights=asymmetric_weights, normalized=false)
+                @test bc_asym ≈ bc_expected atol=1e-10
+            end
+        end
+
+        @testset "Asymmetric weights warn in convenience method" begin
+            g = SimpleGraph(4)
+            add_edge!(g, 1, 2)
+            add_edge!(g, 2, 3)
+            add_edge!(g, 3, 4)
+            add_edge!(g, 1, 4)
+
+            averaged_weights = Dict(
+                (1, 2) => 2.0, (2, 1) => 2.0,
+                (2, 3) => 1.5, (3, 2) => 1.5,
+                (3, 4) => 3.0, (4, 3) => 3.0,
+                (1, 4) => 4.5, (4, 1) => 4.5
+            )
+            bc_expected = bw_centrality(g, averaged_weights, normalized=false)
+
+            asymmetric_weights = Dict(
+                (1, 2) => 1.0, (2, 1) => 3.0,
+                (2, 3) => 1.0, (3, 2) => 2.0,
+                (3, 4) => 2.0, (4, 3) => 4.0,
+                (1, 4) => 6.0, (4, 1) => 3.0
+            )
+
+            @test_logs (:warn, r"Undirected graph has asymmetric weights") begin
+                bc_asym = bw_centrality(g, asymmetric_weights, normalized=false)
+                @test bc_asym ≈ bc_expected atol=1e-10
+            end
+        end
+
         @testset "Weighted star" begin
             g = SimpleGraph(5)
             for i in 2:5

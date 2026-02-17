@@ -235,6 +235,33 @@ end
         @test r ≈ expected atol=1e-6
     end
 
+    @testset "Asymmetric undirected weights warn and are averaged" begin
+        g = SimpleGraph(4)
+        add_edge!(g, 1, 2)
+        add_edge!(g, 2, 3)
+        add_edge!(g, 3, 4)
+        add_edge!(g, 1, 4)
+
+        symmetric_weights = Dict(
+            (1, 2) => 2.0, (2, 1) => 2.0,
+            (2, 3) => 1.5, (3, 2) => 1.5,
+            (3, 4) => 3.0, (4, 3) => 3.0,
+            (1, 4) => 4.5, (4, 1) => 4.5
+        )
+        r_expected = JuliAlg.pagerank(g, weights=symmetric_weights, tol=1e-10, maxiter=1000)
+
+        asymmetric_weights = Dict(
+            (1, 2) => 1.0, (2, 1) => 3.0,
+            (2, 3) => 1.0, (3, 2) => 2.0,
+            (3, 4) => 2.0, (4, 3) => 4.0,
+            (1, 4) => 6.0, (4, 1) => 3.0
+        )
+        @test_logs (:warn, r"Undirected graph has asymmetric weights") begin
+            r_asym = JuliAlg.pagerank(g, weights=asymmetric_weights, tol=1e-10, maxiter=1000)
+            @test r_asym ≈ r_expected atol=1e-6
+        end
+    end
+
     @testset "Larger random graph" begin
         import Random
         Random.seed!(42)

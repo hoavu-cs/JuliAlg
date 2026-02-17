@@ -73,6 +73,8 @@ function bw_centrality(
         return BC
     end
 
+    processed_weights = average_undirected_weights(G, weights)
+
     bc_lock = ReentrantLock()
 
     if weights === nothing
@@ -137,10 +139,10 @@ function bw_centrality(
                 push!(S, v)
                 for w in neighbors(G, v)
                     edge_key = (v, w)
-                    if !haskey(weights, edge_key)
+                    if !haskey(processed_weights, edge_key)
                         continue
                     end
-                    dist_vw = d[v] + weights[edge_key]
+                    dist_vw = d[v] + processed_weights[edge_key]
                     if dist_vw < d[w]
                         d[w] = dist_vw
                         σ[w] = σ[v]

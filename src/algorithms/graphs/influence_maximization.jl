@@ -7,11 +7,13 @@ using Graphs
     and returns the average number of activated nodes.
 """
 function simulate_ic(
-    g::SimpleDiGraph, 
+    g::AbstractGraph,
     weights::Dict{Tuple{Int, Int}, Float64}, 
     seed_set::Vector{Int}, 
     n_simulations::Int = 10_000
 )
+
+    processed_weights = average_undirected_weights(g, weights)
 
     total_activated = 0
     results = Vector{Int}(undef, n_simulations)
@@ -24,7 +26,7 @@ function simulate_ic(
             next_activated = Set{Int}()
             for u ∈ newly_activated
                 for v ∈ outneighbors(g, u)
-                    if v ∉ activated && rand() ≤ get(weights, (u, v), 0.0)
+                    if v ∉ activated && rand() ≤ get(processed_weights, (u, v), 0.0)
                         push!(next_activated, v)
                     end
                 end
@@ -50,12 +52,14 @@ end
     Returns a ≈ (1 - 1/e) approximate solution using a greedy algorithm.
 """
 function influence_maximization_ic(
-    g::SimpleDiGraph,
+    g::AbstractGraph,
     weights::Dict{Tuple{Int, Int}, Float64},
     k::Int,
     n_simulations_small::Int = 1_000,   
     n_simulations::Int = 10_000
 )
+
+    processed_weights = average_undirected_weights(g, weights)
 
     n = nv(g)
     solution = Int[]
@@ -73,9 +77,9 @@ function influence_maximization_ic(
         for v ∈ remaining
             push!(solution, v)
 
-            gain_small_sim = simulate_ic(g, weights, solution, n_simulations_small) - current_spread
+            gain_small_sim = simulate_ic(g, processed_weights, solution, n_simulations_small) - current_spread
             if gain_small_sim > Δ
-                gain_large_sim = simulate_ic(g, weights, solution, n_simulations) - current_spread
+                gain_large_sim = simulate_ic(g, processed_weights, solution, n_simulations) - current_spread
                 if gain_large_sim > Δ
                     Δ = gain_large_sim
                     u = v
@@ -91,7 +95,7 @@ function influence_maximization_ic(
         current_spread += Δ
     end
 
-    final_spread = simulate_ic(g, weights, solution, n_simulations)
+    final_spread = simulate_ic(g, processed_weights, solution, n_simulations)
     return solution, final_spread
 end
 

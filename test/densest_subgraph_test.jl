@@ -94,6 +94,13 @@ const subgraph_density = JuliAlg.density
         @test d ≈ 0.0 atol=1e-6
     end
 
+    @testset "directed graph throws error" begin
+        g = SimpleDiGraph(3)
+        add_edge!(g, 1, 2)
+        add_edge!(g, 2, 3)
+        @test_throws ArgumentError densest_subgraph(g)
+    end
+
     @testset "K5 with two pendants" begin
         # K5 on {1..5} has density 2.0
         # Adding pendants 6,7 gives density 12/7 ≈ 1.71 for whole graph
@@ -327,6 +334,13 @@ end
         @test d ≈ 0.0 atol=1e-6
     end
 
+    @testset "directed graph throws error" begin
+        g = SimpleDiGraph(3)
+        add_edge!(g, 1, 2)
+        add_edge!(g, 2, 3)
+        @test_throws ArgumentError densest_peeling(g)
+    end
+
     @testset "K5 with two pendants" begin
         g = complete_graph(5)
         add_vertex!(g)
@@ -496,6 +510,14 @@ end
         S, d = densest_at_most_k(g, 3)
         @test Set(S) == Set(1:3)
         @test d ≈ 1.0 atol=1e-6
+    end
+
+    @testset "directed graph throws error" begin
+        g = SimpleDiGraph(4)
+        add_edge!(g, 1, 2)
+        add_edge!(g, 2, 3)
+        add_edge!(g, 3, 4)
+        @test_throws ArgumentError densest_at_most_k(g, 2)
     end
 
     @testset "triangle K3, k=2" begin

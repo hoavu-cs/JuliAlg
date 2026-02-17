@@ -21,6 +21,7 @@ include("algorithms/combinatorial/set_cover.jl")
 include("algorithms/combinatorial/max_coverage.jl")
 include("algorithms/graphs/densest_subgraph.jl")
 include("algorithms/graphs/k_core.jl")
+include("algorithms/graphs/weight_utils.jl")
 include("algorithms/graphs/pagerank.jl")
 include("algorithms/graphs/centrality.jl")
 
