@@ -56,6 +56,38 @@ function pagerank(
     out_weights = Vector{Float64}(undef, n)
     has_outgoing = fill(false, n)
     
+    # For undirected graphs with weights, ensure symmetry
+    processed_weights = weights
+    if weights !== nothing && !is_directed(G)
+        # Check for asymmetric weights and issue warning if needed
+        asymmetric_found = false
+        for (u, v) in keys(weights)
+            if has_edge(G, u, v)  # Only check edges that exist in the graph
+                w_uv = get(weights, (u, v), 0.0)
+                w_vu = get(weights, (v, u), 0.0)
+                if w_uv != w_vu
+                    asymmetric_found = true
+                    break
+                end
+            end
+        end
+        
+        if asymmetric_found
+            @warn "Undirected graph has asymmetric weights. Taking average of (u,v) and (v,u) as common weight."
+            # Create a new symmetric weight dictionary
+            processed_weights = Dict{Tuple{Int, Int}, Float64}()
+            for e in edges(G)
+                u = src(e)
+                v = dst(e)
+                w_uv = get(weights, (u, v), 0.0)
+                w_vu = get(weights, (v, u), 0.0)
+                avg_weight = (w_uv + w_vu) / 2.0
+                processed_weights[(u, v)] = avg_weight
+                processed_weights[(v, u)] = avg_weight
+            end
+        end
+    end
+    
     # Compute out-weights and identify dangling nodes
     for v in 1:n
         neighbors_out = outneighbors(G, v)
@@ -64,10 +96,10 @@ function pagerank(
             out_weights[v] = 0.0
         else
             has_outgoing[v] = true
-            if weights !== nothing
+            if processed_weights !== nothing
                 total = 0.0
                 for u in neighbors_out
-                    total += get(weights, (v, u), 0.0)
+                    total += get(processed_weights, (v, u), 0.0)
                 end
                 out_weights[v] = total
             else
@@ -96,8 +128,8 @@ function pagerank(
             rank = base
             for v in inneighbors(G, u)
                 if has_outgoing[v]
-                    if weights !== nothing
-                        w = get(weights, (v, u), 0.0)
+                    if processed_weights !== nothing
+                        w = get(processed_weights, (v, u), 0.0)
                         if w > 0.0
                             rank += α * r[v] * (w / out_weights[v])
                         end
