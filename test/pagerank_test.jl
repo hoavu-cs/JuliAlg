@@ -214,15 +214,87 @@ end
         @test r ≈ expected atol=1e-6
     end
 
-    @testset "Undirected graph" begin
-        g = SimpleGraph(4)
-        add_edge!(g, 1, 2)
-        add_edge!(g, 2, 3)
-        add_edge!(g, 3, 4)
-        add_edge!(g, 1, 4)
-        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
-        expected = pagerank_ground_truth(g)
-        @test r ≈ expected atol=1e-6
+    @testset "Undirected unweighted graphs" begin
+        @testset "Cycle graph C4" begin
+            g = SimpleGraph(4)
+            add_edge!(g, 1, 2); add_edge!(g, 2, 3)
+            add_edge!(g, 3, 4); add_edge!(g, 1, 4)
+            r = JuliAlg.pagerank(g; maxiter=1000, tol=1e-10)
+            expected = pagerank_ground_truth(g)
+            @test r ≈ expected atol=1e-6
+            @test all(isapprox.(r, r[1]; atol=1e-6))  # symmetric graph → all equal
+        end
+
+        @testset "Path graph P4" begin
+            g = SimpleGraph(4)
+            add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4)
+            r = JuliAlg.pagerank(g; maxiter=1000, tol=1e-10)
+            expected = pagerank_ground_truth(g)
+            @test r ≈ expected atol=1e-6
+            # Interior nodes have more connections → higher rank
+            @test r[2] > r[1]
+            @test r[3] > r[4]
+        end
+
+        @testset "Star graph S5" begin
+            g = SimpleGraph(5)
+            for i in 2:5; add_edge!(g, 1, i); end
+            r = JuliAlg.pagerank(g; maxiter=1000, tol=1e-10)
+            expected = pagerank_ground_truth(g)
+            @test r ≈ expected atol=1e-6
+            @test argmax(r) == 1  # hub has highest rank
+        end
+
+        @testset "Random undirected graph" begin
+            import Random
+            Random.seed!(55)
+            g = SimpleGraph(30)
+            for i in 1:30, j in i+1:30
+                rand() < 0.15 && add_edge!(g, i, j)
+            end
+            r = JuliAlg.pagerank(g; maxiter=1000, tol=1e-10)
+            expected = pagerank_ground_truth(g)
+            @test r ≈ expected atol=1e-5
+            @test sum(r) ≈ 1.0 atol=1e-6
+            @test all(r .>= 0.0)
+        end
+    end
+
+    @testset "Undirected weighted graphs" begin
+        @testset "Weighted triangle" begin
+            g = SimpleGraph(3)
+            add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 1, 3)
+            weights = Dict(
+                (1,2)=>2.0, (2,1)=>2.0,
+                (2,3)=>1.0, (3,2)=>1.0,
+                (1,3)=>1.0, (3,1)=>1.0
+            )
+            r = JuliAlg.pagerank(g, weights; maxiter=1000, tol=1e-10)
+            expected = pagerank_ground_truth(g, weights=weights)
+            @test r ≈ expected atol=1e-6
+            # Node 2 receives more weight from node 1 → higher rank than node 3
+            @test r[2] > r[3]
+        end
+
+        @testset "Random weighted undirected graph" begin
+            import Random
+            Random.seed!(66)
+            g = SimpleGraph(20)
+            weights = Dict{Tuple{Int,Int}, Float64}()
+            for i in 1:20, j in i+1:20
+                if rand() < 0.2
+                    add_edge!(g, i, j)
+                    w = rand() * 5.0 + 0.1
+                    weights[(i,j)] = w
+                    weights[(j,i)] = w
+                end
+            end
+            r = JuliAlg.pagerank(g, weights; maxiter=1000, tol=1e-10)
+            expected = pagerank_ground_truth(g, weights=weights)
+            @test r ≈ expected atol=1e-5
+            @test sum(r) ≈ 1.0 atol=1e-6
+            @test all(r .>= 0.0)
+        end
     end
 
 

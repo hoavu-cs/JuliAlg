@@ -440,4 +440,88 @@ n_simulations = 10000
         @test spread == 0.0
     end
 
+    @testset "undirected graphs: unweighted (uniform probabilities)" begin
+        @testset "path graph with prob=1: seed always reaches all nodes" begin
+            g = SimpleGraph(5)
+            for i in 1:4; add_edge!(g, i, i+1); end
+            weights = Dict{Tuple{Int,Int}, Float64}()
+            for i in 1:4
+                weights[(i, i+1)] = 1.0
+                weights[(i+1, i)] = 1.0
+            end
+            # With prob=1, any seed reaches all 5 nodes
+            for seed in 1:5
+                spread = simulate_ic(g, weights, [seed]; n_simulations=100)
+                @test spread ≈ 5.0 atol=0.01
+            end
+        end
+
+        @testset "star graph: hub seed maximizes spread" begin
+            g = SimpleGraph(5)
+            for i in 2:5; add_edge!(g, 1, i); end
+            weights = Dict{Tuple{Int,Int}, Float64}()
+            for i in 2:5
+                weights[(1, i)] = 0.9
+                weights[(i, 1)] = 0.9
+            end
+            solution, _ = influence_maximization_ic(g, weights, 1;
+                n_simulations_small=500, n_simulations=3000)
+            @test 1 in solution  # hub should be selected
+        end
+
+        @testset "symmetric cycle: all seeds have equal expected spread" begin
+            g = SimpleGraph(4)
+            for i in 1:4; add_edge!(g, i, mod1(i+1, 4)); end
+            weights = Dict{Tuple{Int,Int}, Float64}()
+            for i in 1:4
+                weights[(i, mod1(i+1, 4))] = 0.5
+                weights[(mod1(i+1, 4), i)] = 0.5
+            end
+            spreads = [simulate_ic(g, weights, [v]; n_simulations=5000) for v in 1:4]
+            # Symmetric graph → all seeds give roughly equal spread
+            @test maximum(spreads) - minimum(spreads) < 0.3
+        end
+    end
+
+    @testset "undirected graphs: weighted" begin
+        @testset "weighted path: high-weight edges increase spread" begin
+            g = SimpleGraph(4)
+            add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4)
+            # High weight on (1,2), low on (2,3) and (3,4)
+            weights = Dict(
+                (1,2)=>1.0, (2,1)=>1.0,
+                (2,3)=>0.1, (3,2)=>0.1,
+                (3,4)=>0.1, (4,3)=>0.1
+            )
+            spread_from_1 = simulate_ic(g, weights, [1]; n_simulations=5000)
+            spread_from_4 = simulate_ic(g, weights, [4]; n_simulations=5000)
+            # Seeding node 1 reaches node 2 reliably; seeding node 4 is isolated
+            @test spread_from_1 > spread_from_4
+        end
+
+        @testset "random undirected weighted graph" begin
+            import Random
+            Random.seed!(88)
+            n = 15
+            g = SimpleGraph(n)
+            weights = Dict{Tuple{Int,Int}, Float64}()
+            for i in 1:n, j in i+1:n
+                if rand() < 0.3
+                    add_edge!(g, i, j)
+                    w = rand() * 0.5 + 0.1
+                    weights[(i,j)] = w
+                    weights[(j,i)] = w
+                end
+            end
+            k = 3
+            solution, spread = influence_maximization_ic(g, weights, k;
+                n_simulations_small=500, n_simulations=2000)
+            @test length(solution) <= k
+            @test length(solution) == length(unique(solution))
+            @test all(1 <= v <= n for v in solution)
+            @test spread >= k
+            @test spread <= n
+        end
+    end
+
 end
