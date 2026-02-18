@@ -180,6 +180,20 @@ weights = Dict((1,2)=>1.0, (2,1)=>1.0, (2,3)=>2.0, (3,2)=>2.0,
 bc = bw_centrality(g, weights)
 ```
 
+### K-Core Decomposition
+
+```julia
+using Graphs, JuliAlg
+
+g = SimpleGraph(6)
+add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 1, 3)  # triangle (2-core)
+add_edge!(g, 3, 4); add_edge!(g, 4, 5); add_edge!(g, 5, 6)  # tail (1-core)
+
+core = k_core_decomposition(g)
+# core[1] == core[2] == core[3] == 2  (inside the triangle)
+# core[4] == core[5] == core[6] == 1  (in the tail)
+```
+
 ### Densest Subgraph
 
 ```julia
