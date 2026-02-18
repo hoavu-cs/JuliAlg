@@ -5,7 +5,7 @@ using DataStructures
 """
     bw_centrality(G, weights=nothing, normalized=true)
 
-Compute betweenness centrality scores for vertices of directed graph `G`.
+Compute betweenness centrality scores for all vertices of graph `G`.
 
 Betweenness centrality measures the fraction of shortest paths that pass through each vertex.
 For a vertex v, its betweenness centrality is defined as:
@@ -15,12 +15,17 @@ For a vertex v, its betweenness centrality is defined as:
 where σ_{st} is the total number of shortest paths from s to t, and σ_{st}(v) is the number
 of those paths that pass through v.
 
+Accepts both directed (`SimpleDiGraph`) and undirected (`SimpleGraph`) graphs.
+For undirected graphs, each edge is treated as two directed edges and scores are normalized
+by (n-1)(n-2)/2. For weighted undirected graphs, the caller must ensure `weights[(u,v)] == weights[(v,u)]` for all edges.
+
 # Arguments
-- `G`: Directed graph
+- `G`: Directed or undirected graph
 - `weights`: Optional dictionary mapping `(u, v)` edges to weights (default `nothing`).
              If provided, shortest paths are computed using edge weights (higher weight =
              lower cost). If `nothing`, all edges have equal weight (unweighted).
-- `normalized`: If `true`, normalize scores by (n-1)(n-2). Default: `true`.
+- `normalized`: If `true`, normalize scores by (n-1)(n-2) for directed graphs or
+                (n-1)(n-2)/2 for undirected graphs. Default: `true`.
 
 # Returns
 - Vector of betweenness centrality scores (one per vertex)
@@ -29,11 +34,17 @@ of those paths that pass through v.
 ```julia
 using Graphs, JuliAlg
 
+# Directed graph
 g = SimpleDiGraph(4)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 1, 4)
-
 bc = bw_centrality(g)
 
+# Undirected graph
+g = SimpleGraph(5)
+add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 4, 5)
+bc = bw_centrality(g)
+
+# Weighted
 weights = Dict((1, 2) => 2.0, (2, 3) => 1.0, (3, 4) => 3.0, (1, 4) => 5.0)
 bc = bw_centrality(g, weights)
 ```
@@ -42,8 +53,8 @@ bc = bw_centrality(g, weights)
 Uses Brandes' algorithm, which runs in O(nm) time for unweighted graphs and
 O(nm + n² log n) for weighted graphs, where n is number of vertices and m is number of edges.
 
-For unweighted graphs: Use BFS from each source vertex.
-For weighted graphs: Use Dijkstra's algorithm from each source vertex.
+For unweighted graphs: BFS from each source vertex.
+For weighted graphs: Dijkstra's algorithm from each source vertex.
 """
 function bw_centrality(
     G::AbstractGraph,

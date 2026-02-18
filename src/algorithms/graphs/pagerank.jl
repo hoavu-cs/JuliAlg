@@ -4,10 +4,14 @@ using SparseArrays
 """
     pagerank(G, weights=nothing, α=0.85, maxiter=100, tol=1e-6)
 
-Compute PageRank scores for vertices of directed graph `G`.
+Compute PageRank scores for all vertices of graph `G`.
+
+Accepts both directed (`SimpleDiGraph`) and undirected (`SimpleGraph`) graphs.
+For undirected graphs, each edge is treated as two directed edges.
+For weighted undirected graphs, the caller must ensure `weights[(u,v)] == weights[(v,u)]` for all edges.
 
 # Arguments
-- `G`: Directed graph
+- `G`: Directed or undirected graph
 - `weights`: Optional dictionary mapping `(u, v)` edges to weights (default `nothing`).
              If provided, transition probabilities are proportional to edge weights.
              If `nothing`, all edges have equal weight.
@@ -22,11 +26,17 @@ Compute PageRank scores for vertices of directed graph `G`.
 ```julia
 using Graphs, JuliAlg
 
+# Directed graph
 g = SimpleDiGraph(3)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 1)
-
 r = pagerank(g)
 
+# Undirected graph
+g = SimpleGraph(3)
+add_edge!(g, 1, 2); add_edge!(g, 2, 3)
+r = pagerank(g)
+
+# Weighted
 weights = Dict((1, 2) => 2.0, (2, 3) => 1.0, (3, 1) => 1.0)
 r = pagerank(g, weights)
 ```
