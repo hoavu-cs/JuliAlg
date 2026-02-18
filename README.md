@@ -132,14 +132,24 @@ seeds, spread = influence_maximization_ic(g, weights, k)
 ```julia
 using Graphs, JuliAlg
 
+# Directed, unweighted
 g = SimpleDiGraph(4)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 1); add_edge!(g, 2, 4)
+r = pagerank(g)                  # α=0.85
+r = pagerank(g, nothing, 0.9)   # custom damping factor
 
-r = pagerank(g)          # unweighted, α=0.85
-r = pagerank(g, nothing, 0.9)  # custom damping factor
-
-# Weighted
+# Directed, weighted
 weights = Dict((1,2) => 2.0, (2,3) => 1.0, (3,1) => 1.0, (2,4) => 3.0)
+r = pagerank(g, weights)
+
+# Undirected, unweighted
+g = SimpleGraph(4)
+add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 4, 1)
+r = pagerank(g)
+
+# Undirected, weighted (weights must be symmetric: w[(u,v)] == w[(v,u)])
+weights = Dict((1,2)=>2.0, (2,1)=>2.0, (2,3)=>1.0, (3,2)=>1.0,
+               (3,4)=>3.0, (4,3)=>3.0, (4,1)=>1.0, (1,4)=>1.0)
 r = pagerank(g, weights)
 ```
 
@@ -148,18 +158,22 @@ r = pagerank(g, weights)
 ```julia
 using Graphs, JuliAlg
 
-# Directed graph
+# Directed, unweighted
 g = SimpleDiGraph(4)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 1, 4)
-bc = bw_centrality(g)           # normalized
-bc = bw_centrality(g, nothing, false)  # unnormalized
+bc = bw_centrality(g)                    # normalized
+bc = bw_centrality(g, nothing, false)    # unnormalized
 
-# Undirected graph
+# Directed, weighted
+weights = Dict((1,2)=>2.0, (2,3)=>1.0, (3,4)=>3.0, (1,4)=>10.0)
+bc = bw_centrality(g, weights)
+
+# Undirected, unweighted
 g = SimpleGraph(5)
 for i in 1:4; add_edge!(g, i, i+1); end
 bc = bw_centrality(g)
 
-# Weighted (symmetric weights required for undirected)
+# Undirected, weighted (weights must be symmetric: w[(u,v)] == w[(v,u)])
 weights = Dict((1,2)=>1.0, (2,1)=>1.0, (2,3)=>2.0, (3,2)=>2.0,
                (3,4)=>1.0, (4,3)=>1.0, (4,5)=>3.0, (5,4)=>3.0)
 bc = bw_centrality(g, weights)
