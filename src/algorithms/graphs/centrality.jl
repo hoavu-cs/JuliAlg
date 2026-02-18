@@ -3,9 +3,9 @@ using SparseArrays
 using DataStructures
 
 """
-    bw_centrality(G::AbstractGraph; kwargs...)
+    bw_centrality(G, weights=nothing, normalized=true)
 
-Compute betweenness centrality scores for vertices of graph `G`.
+Compute betweenness centrality scores for vertices of directed graph `G`.
 
 Betweenness centrality measures the fraction of shortest paths that pass through each vertex.
 For a vertex v, its betweenness centrality is defined as:
@@ -16,14 +16,11 @@ where σ_{st} is the total number of shortest paths from s to t, and σ_{st}(v) 
 of those paths that pass through v.
 
 # Arguments
-- `G`: Graph (directed or undirected)
-- `normalized`: If `true`, normalize scores by (n-1)(n-2) for directed graphs or 
-                (n-1)(n-2)/2 for undirected graphs, where n is number of vertices.
-                Default: `true`.
-- `endpoints`: If `true`, include endpoints (s and t) in the paths. Default: `false`.
+- `G`: Directed graph
 - `weights`: Optional dictionary mapping `(u, v)` edges to weights (default `nothing`).
-             If provided, shortest paths are computed using edge weights (higher weight = 
+             If provided, shortest paths are computed using edge weights (higher weight =
              lower cost). If `nothing`, all edges have equal weight (unweighted).
+- `normalized`: If `true`, normalize scores by (n-1)(n-2). Default: `true`.
 
 # Returns
 - Vector of betweenness centrality scores (one per vertex)
@@ -32,48 +29,33 @@ of those paths that pass through v.
 ```julia
 using Graphs, JuliAlg
 
-# Unweighted undirected graph
-g = SimpleGraph(5)
-add_edge!(g, 1, 2)
-add_edge!(g, 2, 3)
-add_edge!(g, 3, 4)
-add_edge!(g, 4, 5)
+g = SimpleDiGraph(4)
+add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 1, 4)
+
 bc = bw_centrality(g)
 
-# Weighted directed graph
-g = SimpleDiGraph(4)
-add_edge!(g, 1, 2)
-add_edge!(g, 2, 3)
-add_edge!(g, 3, 4)
-add_edge!(g, 1, 4)
 weights = Dict((1, 2) => 2.0, (2, 3) => 1.0, (3, 4) => 3.0, (1, 4) => 5.0)
-bc = bw_centrality(g, weights=weights)
+bc = bw_centrality(g, weights)
 ```
 
 # Algorithm
-The betweenness centrality algorithm will be implemented using Brandes' algorithm,
-which runs in O(nm) time for unweighted graphs and O(nm + n² log n) for weighted graphs,
-where n is number of vertices and m is number of edges.
+Uses Brandes' algorithm, which runs in O(nm) time for unweighted graphs and
+O(nm + n² log n) for weighted graphs, where n is number of vertices and m is number of edges.
 
 For unweighted graphs: Use BFS from each source vertex.
 For weighted graphs: Use Dijkstra's algorithm from each source vertex.
-
-The algorithm accumulates dependencies to avoid explicit path counting.
 """
 function bw_centrality(
-    G::AbstractGraph;
-    normalized::Bool=true,
-    endpoints::Bool=false,
-    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing}=nothing
+    G::AbstractGraph,
+    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing,
+    normalized::Bool = true
 )
     n = nv(G)
-    BC = zeros(Float64, n)  
+    BC = zeros(Float64, n)
 
     if n < 2
         return BC
     end
-
-    processed_weights = average_undirected_weights(G, weights)
 
     bc_lock = ReentrantLock()
 
@@ -139,10 +121,10 @@ function bw_centrality(
                 push!(S, v)
                 for w in neighbors(G, v)
                     edge_key = (v, w)
-                    if !haskey(processed_weights, edge_key)
+                    if !haskey(weights, edge_key)
                         continue
                     end
-                    dist_vw = d[v] + processed_weights[edge_key]
+                    dist_vw = d[v] + weights[edge_key]
                     if dist_vw < d[w]
                         d[w] = dist_vw
                         σ[w] = σ[v]
@@ -174,37 +156,41 @@ function bw_centrality(
         end
     end
 
-    if !is_directed(G)
-        BC ./= 2
-    end
-    
-    if normalized
-        if n > 2
-            denominator = is_directed(G) ? (n - 1) * (n - 2) : (n - 1) * (n - 2) / 2
-            return BC ./ denominator
-        else
-            return BC
-        end
+    if normalized && n > 2
+        return BC ./ ((n - 1) * (n - 2))
     else
         return BC
     end
 end
 
 """
-    bw_centrality(G::AbstractGraph, weights::Dict{Tuple{Int, Int}, Float64}; kwargs...)
+    bw_centrality(G::SimpleGraph, weights=nothing, normalized=true)
 
-Convenience method for weighted betweenness centrality.
+Undirected-graph overload: converts `G` to a bidirectional directed graph
+and delegates to the directed `bw_centrality`. Each pair (s, t) is counted
+in both directions, so raw scores are halved before normalization.
 """
 function bw_centrality(
-    G::AbstractGraph,
-    weights::Dict{Tuple{Int, Int}, Float64};
-    normalized::Bool=true,
-    endpoints::Bool=false
+    G::SimpleGraph,
+    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing,
+    normalized::Bool = true
 )
-    return bw_centrality(G; normalized=normalized, endpoints=endpoints, weights=weights)
+    if weights !== nothing
+        dg, directed_weights = _to_bidirectional_digraph(G, weights)
+    else
+        dg, directed_weights = SimpleDiGraph(G), nothing
+    end
+    bc = bw_centrality(dg, directed_weights, false)
+    bc ./= 2  # each undirected pair (s,t) counted in both directions
+    n = nv(G)
+    if normalized && n > 2
+        bc ./= (n - 1) * (n - 2) / 2
+    end
+    return bc
 end
 
 # Precompile for common use cases
 precompile(bw_centrality, (SimpleDiGraph{Int},))
 precompile(bw_centrality, (SimpleGraph{Int},))
 precompile(bw_centrality, (SimpleDiGraph{Int}, Dict{Tuple{Int, Int}, Float64}))
+precompile(bw_centrality, (SimpleGraph{Int}, Dict{Tuple{Int, Int}, Float64}))

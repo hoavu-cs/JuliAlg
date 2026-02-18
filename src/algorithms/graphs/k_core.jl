@@ -6,8 +6,12 @@ using Graphs
     Returns a Dict mapping each vertex to its core number.
     The core number of a vertex v is the largest k such that v belongs to a k-core,
     where the k-core is the maximal subgraph in which every vertex has degree at least k.
+
+    Throws an ArgumentError if `G` is directed.
 """
 function k_core_decomposition(G::AbstractGraph)
+    is_directed(G) && throw(ArgumentError("k_core_decomposition requires an undirected graph"))
+
     if nv(G) == 0
         return Dict{Int, Int}()
     end

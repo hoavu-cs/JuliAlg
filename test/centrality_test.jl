@@ -23,7 +23,7 @@ using JuliAlg
         @testset "Two vertices, one edge" begin
             g = SimpleGraph(2)
             add_edge!(g, 1, 2)
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [0.0, 0.0] atol=1e-10
         end
     end
@@ -34,7 +34,7 @@ using JuliAlg
             for i in 1:4
                 add_edge!(g, i, i + 1)
             end
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [0.0, 3.0, 4.0, 3.0, 0.0] atol=1e-10
             @test argmax(bc) == 3
         end
@@ -44,7 +44,7 @@ using JuliAlg
             for i in 2:5
                 add_edge!(g, 1, i)
             end
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [6.0, 0.0, 0.0, 0.0, 0.0] atol=1e-10
             @test argmax(bc) == 1
         end
@@ -54,7 +54,7 @@ using JuliAlg
             for i in 1:5
                 add_edge!(g, i, mod1(i + 1, 5))
             end
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [1.0, 1.0, 1.0, 1.0, 1.0] atol=1e-10
             @test all(isapprox.(bc, bc[1]; atol=1e-10))
         end
@@ -64,7 +64,7 @@ using JuliAlg
             for i in 1:4, j in i+1:4
                 add_edge!(g, i, j)
             end
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [0.0, 0.0, 0.0, 0.0] atol=1e-10
         end
 
@@ -74,7 +74,7 @@ using JuliAlg
             add_edge!(g, 1, 3)
             add_edge!(g, 2, 4)
             add_edge!(g, 3, 4)
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [0.5, 0.5, 0.5, 0.5] atol=1e-10
         end
 
@@ -82,7 +82,7 @@ using JuliAlg
             g = SimpleGraph(4)
             add_edge!(g, 1, 2)
             add_edge!(g, 3, 4)
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [0.0, 0.0, 0.0, 0.0] atol=1e-10
         end
     end
@@ -93,7 +93,7 @@ using JuliAlg
             add_edge!(g, 1, 2)
             add_edge!(g, 2, 3)
             add_edge!(g, 3, 4)
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [0.0, 2.0, 2.0, 0.0] atol=1e-10
             @test bc[2] > 0
             @test bc[3] > 0
@@ -107,7 +107,7 @@ using JuliAlg
             add_edge!(g, 2, 3)
             add_edge!(g, 3, 4)
             add_edge!(g, 4, 1)
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [3.0, 3.0, 3.0, 3.0] atol=1e-10
         end
 
@@ -116,7 +116,7 @@ using JuliAlg
             for i in 2:5
                 add_edge!(g, 1, i)
             end
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [0.0, 0.0, 0.0, 0.0, 0.0] atol=1e-10
         end
 
@@ -126,7 +126,7 @@ using JuliAlg
             add_edge!(g, 2, 3)
             add_edge!(g, 3, 4)
             add_edge!(g, 1, 4)
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test bc ≈ [0.0, 1.0, 1.0, 0.0] atol=1e-10
         end
     end
@@ -139,7 +139,7 @@ using JuliAlg
             add_edge!(g, 3, 4)
             add_edge!(g, 1, 4)
             weights = Dict((1, 2) => 2.0, (2, 3) => 1.0, (3, 4) => 3.0, (1, 4) => 10.0)
-            bc = bw_centrality(g, weights=weights, normalized=false)
+            bc = bw_centrality(g, weights, false)
             @test bc ≈ [0.0, 2.0, 2.0, 0.0] atol=1e-10
             @test bc[2] > 0
             @test bc[3] > 0
@@ -152,7 +152,7 @@ using JuliAlg
             add_edge!(g, 3, 4)
             add_edge!(g, 1, 4)
             weights = Dict((1, 2) => 2.0, (2, 3) => 1.0, (3, 4) => 3.0, (1, 4) => 5.0)
-            bc = bw_centrality(g, weights=weights, normalized=false)
+            bc = bw_centrality(g, weights, false)
             @test bc ≈ [0.0, 1.0, 1.0, 0.0] atol=1e-10
         end
 
@@ -162,7 +162,7 @@ using JuliAlg
             add_edge!(g, 2, 3)
             add_edge!(g, 1, 3)
             weights = Dict((1, 2) => 1.0, (2, 3) => 1.0, (1, 3) => 5.0)
-            bc = bw_centrality(g, weights=weights, normalized=false)
+            bc = bw_centrality(g, weights, false)
             @test bc ≈ [0.0, 1.0, 0.0] atol=1e-10
             @test bc[2] > 0
         end
@@ -175,8 +175,8 @@ using JuliAlg
             add_edge!(g, 4, 5)
             add_edge!(g, 1, 3)
             weights = Dict((1, 2) => 1.0, (2, 3) => 1.0, (3, 4) => 1.0, (4, 5) => 1.0, (1, 3) => 1.0)
-            bc_w = bw_centrality(g, weights=weights, normalized=false)
-            bc_u = bw_centrality(g, normalized=false)
+            bc_w = bw_centrality(g, weights, false)
+            bc_u = bw_centrality(g, nothing, false)
             expected = [0.0, 0.0, 4.0, 3.0, 0.0]
             @test bc_w ≈ expected atol=1e-10
             @test bc_u ≈ expected atol=1e-10
@@ -196,64 +196,10 @@ using JuliAlg
                 (3, 4) => 5.0, (4, 3) => 5.0,
                 (1, 4) => 7.0, (4, 1) => 7.0
             )
-            bc = bw_centrality(g, weights=weights, normalized=false)
+            bc = bw_centrality(g, weights, false)
             @test bc ≈ [0.0, 1.0, 1.0, 0.0] atol=1e-10
         end
 
-        @testset "Asymmetric weights are averaged with warning" begin
-            g = SimpleGraph(4)
-            add_edge!(g, 1, 2)
-            add_edge!(g, 2, 3)
-            add_edge!(g, 3, 4)
-            add_edge!(g, 1, 4)
-
-            symmetric_weights = Dict(
-                (1, 2) => 2.0, (2, 1) => 2.0,
-                (2, 3) => 1.5, (3, 2) => 1.5,
-                (3, 4) => 3.0, (4, 3) => 3.0,
-                (1, 4) => 4.5, (4, 1) => 4.5
-            )
-            bc_expected = bw_centrality(g, weights=symmetric_weights, normalized=false)
-
-            asymmetric_weights = Dict(
-                (1, 2) => 1.0, (2, 1) => 3.0,
-                (2, 3) => 1.0, (3, 2) => 2.0,
-                (3, 4) => 2.0, (4, 3) => 4.0,
-                (1, 4) => 6.0, (4, 1) => 3.0
-            )
-            @test_logs (:warn, r"Undirected graph has asymmetric weights") begin
-                bc_asym = bw_centrality(g, weights=asymmetric_weights, normalized=false)
-                @test bc_asym ≈ bc_expected atol=1e-10
-            end
-        end
-
-        @testset "Asymmetric weights warn in convenience method" begin
-            g = SimpleGraph(4)
-            add_edge!(g, 1, 2)
-            add_edge!(g, 2, 3)
-            add_edge!(g, 3, 4)
-            add_edge!(g, 1, 4)
-
-            averaged_weights = Dict(
-                (1, 2) => 2.0, (2, 1) => 2.0,
-                (2, 3) => 1.5, (3, 2) => 1.5,
-                (3, 4) => 3.0, (4, 3) => 3.0,
-                (1, 4) => 4.5, (4, 1) => 4.5
-            )
-            bc_expected = bw_centrality(g, averaged_weights, normalized=false)
-
-            asymmetric_weights = Dict(
-                (1, 2) => 1.0, (2, 1) => 3.0,
-                (2, 3) => 1.0, (3, 2) => 2.0,
-                (3, 4) => 2.0, (4, 3) => 4.0,
-                (1, 4) => 6.0, (4, 1) => 3.0
-            )
-
-            @test_logs (:warn, r"Undirected graph has asymmetric weights") begin
-                bc_asym = bw_centrality(g, asymmetric_weights, normalized=false)
-                @test bc_asym ≈ bc_expected atol=1e-10
-            end
-        end
 
         @testset "Weighted star" begin
             g = SimpleGraph(5)
@@ -265,7 +211,7 @@ using JuliAlg
                 weights[(1, i)] = Float64(i)
                 weights[(i, 1)] = Float64(i)
             end
-            bc = bw_centrality(g, weights=weights, normalized=false)
+            bc = bw_centrality(g, weights, false)
             @test bc ≈ [6.0, 0.0, 0.0, 0.0, 0.0] atol=1e-10
             @test argmax(bc) == 1
         end
@@ -277,7 +223,7 @@ using JuliAlg
             for i in 1:4
                 add_edge!(g, i, i + 1)
             end
-            bc_norm = bw_centrality(g, normalized=true)
+            bc_norm = bw_centrality(g)
             @test bc_norm ≈ [0.0, 0.5, 2/3, 0.5, 0.0] atol=1e-10
         end
 
@@ -286,23 +232,9 @@ using JuliAlg
             add_edge!(g, 1, 2)
             add_edge!(g, 2, 3)
             add_edge!(g, 3, 4)
-            bc_norm = bw_centrality(g, normalized=true)
+            bc_norm = bw_centrality(g)
             @test bc_norm ≈ [0.0, 1/3, 1/3, 0.0] atol=1e-10
         end
-    end
-
-    @testset "Convenience method" begin
-        g = SimpleDiGraph(4)
-        add_edge!(g, 1, 2)
-        add_edge!(g, 2, 3)
-        add_edge!(g, 3, 4)
-        add_edge!(g, 1, 4)
-        weights = Dict((1, 2) => 2.0, (2, 3) => 1.0, (3, 4) => 3.0, (1, 4) => 5.0)
-        bc1 = bw_centrality(g, weights=weights)
-        bc2 = bw_centrality(g, weights)
-        expected = [0.0, 1/6, 1/6, 0.0]
-        @test bc1 ≈ expected atol=1e-10
-        @test bc2 ≈ expected atol=1e-10
     end
 
     @testset "Random graphs" begin
@@ -316,7 +248,7 @@ using JuliAlg
                     add_edge!(g, i, j)
                 end
             end
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             expected = [7.666666666666667, 8.952380952380953, 5.845238095238093,
                         4.309523809523809, 1.8928571428571428, 32.42857142857145,
                         9.833333333333332, 0.0, 0.0, 9.833333333333332,
@@ -334,7 +266,7 @@ using JuliAlg
                     add_edge!(g, i, j)
                 end
             end
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             expected = [11.199999999999998, 72.16666666666677, 16.583333333333336,
                         4.366666666666667, 10.733333333333333, 0.3333333333333333,
                         72.93333333333342, 59.38333333333338, 28.333333333333332,
@@ -354,7 +286,7 @@ using JuliAlg
                     weights[(i, j)] = rand() * 10.0
                 end
             end
-            bc = bw_centrality(g, weights=weights, normalized=false)
+            bc = bw_centrality(g, weights, false)
             expected = [76.0, 48.0, 12.0, 23.0, 60.0, 0.0, 25.0, 16.0, 4.0,
                         39.0, 18.0, 13.0, 0.0, 21.0, 0.0]
             @test bc ≈ expected atol=1e-8
@@ -372,7 +304,7 @@ using JuliAlg
                     weights[(j, i)] = w
                 end
             end
-            bc = bw_centrality(g, weights=weights, normalized=false)
+            bc = bw_centrality(g, weights, false)
             expected = [0.0, 1.0, 27.0, 0.0, 1.0, 34.0, 13.0, 15.0, 40.0,
                         9.0, 7.0, 21.0, 0.0, 34.0, 1.0]
             @test bc ≈ expected atol=1e-8
@@ -396,7 +328,7 @@ using JuliAlg
                 end
             end
 
-            bc = bw_centrality(g, normalized=false)
+            bc = bw_centrality(g, nothing, false)
             @test length(bc) == 10000
         end
     end

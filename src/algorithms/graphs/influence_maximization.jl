@@ -13,11 +13,8 @@ function simulate_ic(
     n_simulations::Int = 10_000
 )
 
-    processed_weights = average_undirected_weights(g, weights)
-
-    total_activated = 0
     results = Vector{Int}(undef, n_simulations)
-    
+
     Threads.@threads for i ∈ 1:n_simulations
         activated = Set(seed_set)
         newly_activated = Set(seed_set)
@@ -26,7 +23,7 @@ function simulate_ic(
             next_activated = Set{Int}()
             for u ∈ newly_activated
                 for v ∈ outneighbors(g, u)
-                    if v ∉ activated && rand() ≤ get(processed_weights, (u, v), 0.0)
+                    if v ∉ activated && rand() ≤ get(weights, (u, v), 0.0)
                         push!(next_activated, v)
                     end
                 end
@@ -59,8 +56,6 @@ function influence_maximization_ic(
     n_simulations::Int = 10_000
 )
 
-    processed_weights = average_undirected_weights(g, weights)
-
     n = nv(g)
     solution = Int[]
     current_spread = 0.0
@@ -77,9 +72,9 @@ function influence_maximization_ic(
         for v ∈ remaining
             push!(solution, v)
 
-            gain_small_sim = simulate_ic(g, processed_weights, solution, n_simulations_small) - current_spread
+            gain_small_sim = simulate_ic(g, weights, solution, n_simulations_small) - current_spread
             if gain_small_sim > Δ
-                gain_large_sim = simulate_ic(g, processed_weights, solution, n_simulations) - current_spread
+                gain_large_sim = simulate_ic(g, weights, solution, n_simulations) - current_spread
                 if gain_large_sim > Δ
                     Δ = gain_large_sim
                     u = v
@@ -95,17 +90,49 @@ function influence_maximization_ic(
         current_spread += Δ
     end
 
-    final_spread = simulate_ic(g, processed_weights, solution, n_simulations)
+    final_spread = simulate_ic(g, weights, solution, n_simulations)
     return solution, final_spread
 end
 
 
-precompile(
-    simulate_ic, 
-    (SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Vector{Int}, Int)
-)
+"""
+    simulate_ic(g::SimpleGraph, weights, seed_set, n_simulations) -> Float64
 
-precompile(
-    influence_maximization_ic, 
-    (SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Int, Int, Int)
+Undirected-graph overload: converts `g` to a bidirectional directed graph
+(each undirected edge becomes two directed edges) and delegates to the
+directed `simulate_ic`.
+"""
+function simulate_ic(
+    g::SimpleGraph,
+    weights::Dict{Tuple{Int, Int}, Float64},
+    seed_set::Vector{Int},
+    n_simulations::Int = 10_000
 )
+    dg, directed_weights = _to_bidirectional_digraph(g, weights)
+    return simulate_ic(dg, directed_weights, seed_set, n_simulations)
+end
+
+
+"""
+    influence_maximization_ic(g::SimpleGraph, weights, k, ...) -> (solution, spread)
+
+Undirected-graph overload: converts `g` to a bidirectional directed graph
+(each undirected edge becomes two directed edges) and delegates to the
+directed `influence_maximization_ic`.
+"""
+function influence_maximization_ic(
+    g::SimpleGraph,
+    weights::Dict{Tuple{Int, Int}, Float64},
+    k::Int,
+    n_simulations_small::Int = 1_000,
+    n_simulations::Int = 10_000
+)
+    dg, directed_weights = _to_bidirectional_digraph(g, weights)
+    return influence_maximization_ic(dg, directed_weights, k, n_simulations_small, n_simulations)
+end
+
+
+precompile(simulate_ic,(SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Vector{Int}, Int))
+precompile(simulate_ic,(SimpleGraph, Dict{Tuple{Int, Int}, Float64}, Vector{Int}, Int))
+precompile(influence_maximization_ic,(SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Int, Int, Int))
+precompile(influence_maximization_ic,(SimpleGraph, Dict{Tuple{Int, Int}, Float64}, Int, Int, Int))

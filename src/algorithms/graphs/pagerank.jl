@@ -2,18 +2,18 @@ using Graphs
 using SparseArrays
 
 """
-    pagerank(G::AbstractGraph; kwargs...)
+    pagerank(G, weights=nothing, α=0.85, maxiter=100, tol=1e-6)
 
-Compute PageRank scores for vertices of graph `G`.
+Compute PageRank scores for vertices of directed graph `G`.
 
 # Arguments
-- `G`: Graph (directed or undirected)
-- `damping`: Damping factor (default 0.85)
-- `maxiter`: Maximum number of iterations (default 100)
-- `tol`: Convergence tolerance (default 1e-6)
+- `G`: Directed graph
 - `weights`: Optional dictionary mapping `(u, v)` edges to weights (default `nothing`).
              If provided, transition probabilities are proportional to edge weights.
              If `nothing`, all edges have equal weight.
+- `α`: Damping factor (default 0.85)
+- `maxiter`: Maximum number of iterations (default 100)
+- `tol`: Convergence tolerance (default 1e-6)
 
 # Returns
 - Vector of PageRank scores (sums to 1)
@@ -22,16 +22,13 @@ Compute PageRank scores for vertices of graph `G`.
 ```julia
 using Graphs, JuliAlg
 
-# Unweighted directed graph
 g = SimpleDiGraph(3)
-add_edge!(g, 1, 2)
-add_edge!(g, 2, 3)
-add_edge!(g, 3, 1)
+add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 1)
+
 r = pagerank(g)
 
-# Weighted graph
 weights = Dict((1, 2) => 2.0, (2, 3) => 1.0, (3, 1) => 1.0)
-r = pagerank(g, weights=weights)
+r = pagerank(g, weights)
 ```
 
 # Algorithm
@@ -45,19 +42,17 @@ For weighted graphs, transition probability from u to v is:
 Dangling nodes (no outgoing edges) are handled by redistributing their probability uniformly.
 """
 function pagerank(
-    G::AbstractGraph; 
-    α::Float64=0.85,
-    maxiter::Int=100,
-    tol::Float64=1e-6,
-    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing}=nothing
+    G::AbstractGraph,
+    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing,
+    α::Float64 = 0.85,
+    maxiter::Int = 100,
+    tol::Float64 = 1e-6
 )
     n = nv(G)
     r = fill(1.0 / n, n)
     out_weights = Vector{Float64}(undef, n)
     has_outgoing = fill(false, n)
 
-    processed_weights = average_undirected_weights(G, weights)
-    
     # Compute out-weights and identify dangling nodes
     for v in 1:n
         neighbors_out = outneighbors(G, v)
@@ -66,10 +61,10 @@ function pagerank(
             out_weights[v] = 0.0
         else
             has_outgoing[v] = true
-            if processed_weights !== nothing
+            if weights !== nothing
                 total = 0.0
                 for u in neighbors_out
-                    total += get(processed_weights, (v, u), 0.0)
+                    total += get(weights, (v, u), 0.0)
                 end
                 out_weights[v] = total
             else
@@ -77,15 +72,15 @@ function pagerank(
             end
         end
     end
-    
+
     # Compute dangling node contribution (uniform redistribution)
     dangling_nodes = findall(x -> (x == false), has_outgoing)
-    
+
     # Pull-based power iteration (each node computes its own rank from in-neighbors)
     # This is naturally parallelizable since each thread writes to a separate r_new[u]
     r_new = Vector{Float64}(undef, n)
 
-    for iter in 1:maxiter
+    for _ in 1:maxiter
         # Compute dangling node contribution (sequential reduction)
         dangling_sum = 0.0
         for v in dangling_nodes
@@ -98,8 +93,8 @@ function pagerank(
             rank = base
             for v in inneighbors(G, u)
                 if has_outgoing[v]
-                    if processed_weights !== nothing
-                        w = get(processed_weights, (v, u), 0.0)
+                    if weights !== nothing
+                        w = get(weights, (v, u), 0.0)
                         if w > 0.0
                             rank += α * r[v] * (w / out_weights[v])
                         end
@@ -124,28 +119,33 @@ function pagerank(
             return r
         end
     end
-    
+
     @warn "PageRank did not converge after $maxiter iterations"
     return r
 end
 
 """
-    pagerank(G::AbstractGraph, weights::Dict{Tuple{Int, Int}, Float64}; kwargs...)
+    pagerank(G::SimpleGraph, weights=nothing, α=0.85, maxiter=100, tol=1e-6)
 
-Convenience method for weighted PageRank.
+Undirected-graph overload: converts `G` to a bidirectional directed graph
+and delegates to the directed `pagerank`.
 """
 function pagerank(
-    G::AbstractGraph,
-    weights::Dict{Tuple{Int, Int}, Float64};
-    α::Float64=0.85,
-    maxiter::Int=100,
-    tol::Float64=1e-6
+    G::SimpleGraph,
+    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing,
+    α::Float64 = 0.85,
+    maxiter::Int = 100,
+    tol::Float64 = 1e-6
 )
-    return pagerank(G; α=α, maxiter=maxiter, tol=tol, weights=weights)
+    if weights !== nothing
+        dg, directed_weights = _to_bidirectional_digraph(G, weights)
+    else
+        dg, directed_weights = SimpleDiGraph(G), nothing
+    end
+    return pagerank(dg, directed_weights, α, maxiter, tol)
 end
 
 # Precompile for common use cases
 precompile(pagerank, (SimpleDiGraph{Int},))
 precompile(pagerank, (SimpleGraph{Int},))
 precompile(pagerank, (SimpleDiGraph{Int}, Dict{Tuple{Int, Int}, Float64}))
-
