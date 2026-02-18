@@ -148,11 +148,16 @@ r = pagerank(g, weights)
 ```julia
 using Graphs, JuliAlg
 
-g = SimpleGraph(5)
-for i in 1:4; add_edge!(g, i, i+1); end
-
+# Directed graph
+g = SimpleDiGraph(4)
+add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 1, 4)
 bc = bw_centrality(g)           # normalized
 bc = bw_centrality(g, nothing, false)  # unnormalized
+
+# Undirected graph
+g = SimpleGraph(5)
+for i in 1:4; add_edge!(g, i, i+1); end
+bc = bw_centrality(g)
 
 # Weighted (symmetric weights required for undirected)
 weights = Dict((1,2)=>1.0, (2,1)=>1.0, (2,3)=>2.0, (3,2)=>2.0,
