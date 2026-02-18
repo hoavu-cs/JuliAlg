@@ -30,11 +30,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:5, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -57,11 +57,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:6, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -90,11 +90,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:4, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -120,11 +120,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:5, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -157,11 +157,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:7, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -192,11 +192,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:6, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -223,11 +223,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:7, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -266,11 +266,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:8, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -305,11 +305,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:8, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -336,11 +336,11 @@ n_simulations = 10000
         
         best_spread = 0.0
         for subset in combinations(1:5, k)
-            spread = simulate_ic(g, weights, collect(subset), n_simulations)
+            spread = simulate_ic(g, weights, collect(subset); n_simulations=n_simulations)
             best_spread = max(best_spread, spread)
         end
         
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         @test spread >= 0.63 * best_spread
     end
 
@@ -367,7 +367,7 @@ n_simulations = 10000
         
         # For random graphs of this size, brute force is infeasible (C(20,5) = 15,504)
         # So we just test that the algorithm runs and produces reasonable output
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         
         @test length(solution) <= k
         @test length(solution) == length(unique(solution))  # No duplicates
@@ -378,7 +378,7 @@ n_simulations = 10000
         # Additional sanity check: single best node should give less spread than k nodes
         best_single_spread = 0.0
         for v in 1:n
-            single_spread = simulate_ic(g, weights, [v], n_simulations)
+            single_spread = simulate_ic(g, weights, [v]; n_simulations=n_simulations)
             best_single_spread = max(best_single_spread, single_spread)
         end
         @test spread >= best_single_spread  # k nodes should beat 1 node
@@ -408,7 +408,7 @@ n_simulations = 10000
         
         # For random graphs of this size, brute force is infeasible (C(40,5) = 658,008)
         # So we just test that the algorithm runs and produces reasonable output
-        solution, spread = influence_maximization_ic(g, weights, k, n_simulations ÷ 10, n_simulations)
+        solution, spread = influence_maximization_ic(g, weights, k; n_simulations_small=n_simulations ÷ 10, n_simulations=n_simulations)
         
         @test length(solution) <= k
         @test length(solution) == length(unique(solution))  # No duplicates
@@ -419,7 +419,7 @@ n_simulations = 10000
         # Additional sanity check: single best node should give less spread than k nodes
         best_single_spread = 0.0
         for v in 1:n
-            single_spread = simulate_ic(g, weights, [v], n_simulations)
+            single_spread = simulate_ic(g, weights, [v]; n_simulations=n_simulations)
             best_single_spread = max(best_single_spread, single_spread)
         end
         @test spread >= best_single_spread  # k nodes should beat 1 node
@@ -431,11 +431,11 @@ n_simulations = 10000
 
         # w(1,2) = 1.0 takes precedence over w(2,1) = 0.0 since 1 < 2
         weights = Dict((1, 2) => 1.0, (2, 1) => 0.0)
-        spread = simulate_ic(g, weights, [1], 5000)
+        spread = simulate_ic(g, weights, [1]; n_simulations=5000)
         @test spread ≈ 2.0 atol=0.1  # node 1 always activates node 2
 
         # k=0 returns empty solution regardless of weights
-        solution, spread = influence_maximization_ic(g, weights, 0, 50, 200)
+        solution, spread = influence_maximization_ic(g, weights, 0; n_simulations_small=50, n_simulations=200)
         @test solution == Int[]
         @test spread == 0.0
     end

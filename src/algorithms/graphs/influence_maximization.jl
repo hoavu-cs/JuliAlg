@@ -8,8 +8,8 @@ using Graphs
 """
 function simulate_ic(
     g::AbstractGraph,
-    weights::Dict{Tuple{Int, Int}, Float64}, 
-    seed_set::Vector{Int}, 
+    weights::Dict{Tuple{Int, Int}, Float64},
+    seed_set::Vector{Int};
     n_simulations::Int = 10_000
 )
 
@@ -51,8 +51,8 @@ end
 function influence_maximization_ic(
     g::AbstractGraph,
     weights::Dict{Tuple{Int, Int}, Float64},
-    k::Int,
-    n_simulations_small::Int = 1_000,   
+    k::Int;
+    n_simulations_small::Int = 1_000,
     n_simulations::Int = 10_000
 )
 
@@ -72,9 +72,9 @@ function influence_maximization_ic(
         for v ∈ remaining
             push!(solution, v)
 
-            gain_small_sim = simulate_ic(g, weights, solution, n_simulations_small) - current_spread
+            gain_small_sim = simulate_ic(g, weights, solution; n_simulations=n_simulations_small) - current_spread
             if gain_small_sim > Δ
-                gain_large_sim = simulate_ic(g, weights, solution, n_simulations) - current_spread
+                gain_large_sim = simulate_ic(g, weights, solution; n_simulations=n_simulations) - current_spread
                 if gain_large_sim > Δ
                     Δ = gain_large_sim
                     u = v
@@ -90,7 +90,7 @@ function influence_maximization_ic(
         current_spread += Δ
     end
 
-    final_spread = simulate_ic(g, weights, solution, n_simulations)
+    final_spread = simulate_ic(g, weights, solution; n_simulations=n_simulations)
     return solution, final_spread
 end
 
@@ -105,11 +105,11 @@ directed `simulate_ic`.
 function simulate_ic(
     g::SimpleGraph,
     weights::Dict{Tuple{Int, Int}, Float64},
-    seed_set::Vector{Int},
+    seed_set::Vector{Int};
     n_simulations::Int = 10_000
 )
     dg, directed_weights = _to_bidirectional_digraph(g, weights)
-    return simulate_ic(dg, directed_weights, seed_set, n_simulations)
+    return simulate_ic(dg, directed_weights, seed_set; n_simulations=n_simulations)
 end
 
 
@@ -123,12 +123,12 @@ directed `influence_maximization_ic`.
 function influence_maximization_ic(
     g::SimpleGraph,
     weights::Dict{Tuple{Int, Int}, Float64},
-    k::Int,
+    k::Int;
     n_simulations_small::Int = 1_000,
     n_simulations::Int = 10_000
 )
     dg, directed_weights = _to_bidirectional_digraph(g, weights)
-    return influence_maximization_ic(dg, directed_weights, k, n_simulations_small, n_simulations)
+    return influence_maximization_ic(dg, directed_weights, k; n_simulations_small=n_simulations_small, n_simulations=n_simulations)
 end
 
 

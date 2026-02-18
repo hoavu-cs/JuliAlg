@@ -75,7 +75,7 @@ end
     @testset "Two-node directed edge" begin
         g = SimpleDiGraph(2)
         add_edge!(g, 1, 2)
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-6
     end
@@ -85,7 +85,7 @@ end
         for i in 1:3, j in 1:3
             i != j && add_edge!(g, i, j)
         end
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-6
     end
@@ -95,7 +95,7 @@ end
         add_edge!(g, 1, 2)
         add_edge!(g, 2, 3)
         add_edge!(g, 3, 1)
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-6
     end
@@ -105,7 +105,7 @@ end
         for i in 2:5
             add_edge!(g, 1, i)
         end
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-6
     end
@@ -115,7 +115,7 @@ end
         for i in 2:5
             add_edge!(g, i, 1)
         end
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-6
         # Center should have highest rank
@@ -126,7 +126,7 @@ end
         g = SimpleDiGraph(3)
         add_edge!(g, 1, 2)
         # Node 2 points nowhere, node 3 is isolated
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-6
     end
@@ -152,7 +152,7 @@ end
         add_edge!(g, 1, 2)
         add_edge!(g, 2, 3)
         add_edge!(g, 3, 4)
-        r = JuliAlg.pagerank(g, nothing, 0.0)
+        r = JuliAlg.pagerank(g, nothing; α=0.0)
         expected = pagerank_ground_truth(g, α=0.0)
         @test r ≈ expected atol=1e-6
         @test all(isapprox.(r, 0.25; atol=1e-6))
@@ -166,7 +166,7 @@ end
         add_edge!(g, 3, 1)
 
         for α in [0.5, 0.85, 0.99]
-            r = JuliAlg.pagerank(g, nothing, α, 1000, 1e-10)
+            r = JuliAlg.pagerank(g, nothing; α=α, maxiter=1000, tol=1e-10)
             expected = pagerank_ground_truth(g, α=α)
             @test r ≈ expected atol=1e-5
         end
@@ -177,7 +177,7 @@ end
         add_edge!(g, 1, 2)
         add_edge!(g, 1, 3)
         weights = Dict((1, 2) => 2.0, (1, 3) => 1.0)
-        r = JuliAlg.pagerank(g, weights, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, weights; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g, weights=weights)
         @test r ≈ expected atol=1e-6
         @test r[2] > r[3]
@@ -199,7 +199,7 @@ end
         add_edge!(g, 1, 2)
         add_edge!(g, 1, 3)
         weights = Dict((1, 2) => 1.0)  # missing (1,3)
-        r = JuliAlg.pagerank(g, weights, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, weights; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g, weights=weights)
         @test r ≈ expected atol=1e-6
     end
@@ -209,7 +209,7 @@ end
         add_edge!(g, 1, 2)
         add_edge!(g, 1, 3)
         weights = Dict((1, 2) => 0.0, (1, 3) => 1.0)
-        r = JuliAlg.pagerank(g, weights, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, weights; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g, weights=weights)
         @test r ≈ expected atol=1e-6
     end
@@ -220,7 +220,7 @@ end
         add_edge!(g, 2, 3)
         add_edge!(g, 3, 4)
         add_edge!(g, 1, 4)
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-6
     end
@@ -235,7 +235,7 @@ end
                 add_edge!(g, i, j)
             end
         end
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-5
     end
@@ -255,7 +255,7 @@ end
         for u in extra_sources
             add_edge!(g, u, 1)
         end
-        r = JuliAlg.pagerank(g, nothing, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g)
         @test r ≈ expected atol=1e-5
         # Node 1 should have the highest rank due to extra incoming edges
@@ -273,7 +273,7 @@ end
                 weights[(i, j)] = rand() * 10.0
             end
         end
-        r = JuliAlg.pagerank(g, weights, 0.85, 1000, 1e-10)
+        r = JuliAlg.pagerank(g, weights; α=0.85, maxiter=1000, tol=1e-10)
         expected = pagerank_ground_truth(g, weights=weights)
         @test r ≈ expected atol=1e-5
     end
@@ -291,7 +291,7 @@ end
             end
         end
 
-        r = JuliAlg.pagerank(g, nothing, 0.85, 200, 1e-8)
+        r = JuliAlg.pagerank(g, nothing; α=0.85, maxiter=200, tol=1e-8)
         @test length(r) == 10000
         @test sum(r) ≈ 1.0 atol=1e-4
         @test all(r .>= 0.0)

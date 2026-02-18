@@ -2,7 +2,7 @@ using Graphs
 using SparseArrays
 
 """
-    pagerank(G, weights=nothing, α=0.85, maxiter=100, tol=1e-6)
+    pagerank(G, weights=nothing; α=0.85, maxiter=100, tol=1e-6)
 
 Compute PageRank scores for all vertices of graph `G`.
 
@@ -53,7 +53,7 @@ Dangling nodes (no outgoing edges) are handled by redistributing their probabili
 """
 function pagerank(
     G::AbstractGraph,
-    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing,
+    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing;
     α::Float64 = 0.85,
     maxiter::Int = 100,
     tol::Float64 = 1e-6
@@ -135,14 +135,14 @@ function pagerank(
 end
 
 """
-    pagerank(G::SimpleGraph, weights=nothing, α=0.85, maxiter=100, tol=1e-6)
+    pagerank(G::SimpleGraph, weights=nothing; α=0.85, maxiter=100, tol=1e-6)
 
 Undirected-graph overload: converts `G` to a bidirectional directed graph
 and delegates to the directed `pagerank`.
 """
 function pagerank(
     G::SimpleGraph,
-    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing,
+    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing;
     α::Float64 = 0.85,
     maxiter::Int = 100,
     tol::Float64 = 1e-6
@@ -152,7 +152,7 @@ function pagerank(
     else
         dg, directed_weights = SimpleDiGraph(G), nothing
     end
-    return pagerank(dg, directed_weights, α, maxiter, tol)
+    return pagerank(dg, directed_weights; α=α, maxiter=maxiter, tol=tol)
 end
 
 # Precompile for common use cases

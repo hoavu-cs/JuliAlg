@@ -44,14 +44,14 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
 
 | Function | Problem | Method | Guarantee |
 |---|---|---|---|
-| `pagerank(G, weights, α)` | PageRank | Power iteration | Exact (up to convergence) |
+| `pagerank(G, weights; α)` | PageRank | Power iteration | Exact (up to convergence) |
 | `influence_maximization_ic(g, weights, k)` | Influence Maximization | Greedy + Monte Carlo IC | (1 - 1/e)-approx |
 | `simulate_ic(g, weights, seed_set)` | IC Spread Estimation | Monte Carlo simulation | - |
 | `densest_subgraph(G)` | Densest Subgraph | Goldberg's algorithm (binary search + max-flow) | Exact |
 | `densest_subgraph_peeling(G)` | Densest Subgraph | Charikar's peeling algorithm | 1/2-approx |
 | `densest_at_most_k_subgraph(G, k)` | Densest At-Most-k Subgraph | Degree-based pruning + brute force | Heuristic |
 | `k_core_decomposition(G)` | K-Core Decomposition | Iterative peeling | Exact, O(m) |
-| `bw_centrality(G, weights, normalized)` | Betweenness Centrality | Brandes' algorithm (BFS / Dijkstra) | Exact, O(nm) / O(nm + n² log n) |
+| `bw_centrality(G, weights; normalized)` | Betweenness Centrality | Brandes' algorithm (BFS / Dijkstra) | Exact, O(nm) / O(nm + n² log n) |
 
 `pagerank`, `bw_centrality`, `influence_maximization_ic`, and `simulate_ic` accept both directed (`SimpleDiGraph`) and undirected (`SimpleGraph`) graphs. For weighted undirected graphs, ensure `weights[(u,v)] == weights[(v,u)]` for all edges.
 
@@ -135,8 +135,9 @@ using Graphs, JuliAlg
 # Directed, unweighted
 g = SimpleDiGraph(4)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 1); add_edge!(g, 2, 4)
-r = pagerank(g)                  # α=0.85
-r = pagerank(g, nothing, 0.9)   # custom damping factor
+r = pagerank(g)                       # α=0.85
+r = pagerank(g, nothing; α=0.9)      # custom damping factor
+r = pagerank(g, nothing; tol=1e-10)  # stricter convergence
 
 # Directed, weighted
 weights = Dict((1,2) => 2.0, (2,3) => 1.0, (3,1) => 1.0, (2,4) => 3.0)
@@ -161,8 +162,8 @@ using Graphs, JuliAlg
 # Directed, unweighted
 g = SimpleDiGraph(4)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 1, 4)
-bc = bw_centrality(g)                    # normalized
-bc = bw_centrality(g, nothing, false)    # unnormalized
+bc = bw_centrality(g)                             # normalized
+bc = bw_centrality(g, nothing; normalized=false)  # unnormalized
 
 # Directed, weighted
 weights = Dict((1,2)=>2.0, (2,3)=>1.0, (3,4)=>3.0, (1,4)=>10.0)

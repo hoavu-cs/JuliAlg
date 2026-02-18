@@ -3,7 +3,7 @@ using SparseArrays
 using DataStructures
 
 """
-    bw_centrality(G, weights=nothing, normalized=true)
+    bw_centrality(G, weights=nothing; normalized=true)
 
 Compute betweenness centrality scores for all vertices of graph `G`.
 
@@ -58,7 +58,7 @@ For weighted graphs: Dijkstra's algorithm from each source vertex.
 """
 function bw_centrality(
     G::AbstractGraph,
-    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing,
+    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing;
     normalized::Bool = true
 )
     n = nv(G)
@@ -175,7 +175,7 @@ function bw_centrality(
 end
 
 """
-    bw_centrality(G::SimpleGraph, weights=nothing, normalized=true)
+    bw_centrality(G::SimpleGraph, weights=nothing; normalized=true)
 
 Undirected-graph overload: converts `G` to a bidirectional directed graph
 and delegates to the directed `bw_centrality`. Each pair (s, t) is counted
@@ -183,7 +183,7 @@ in both directions, so raw scores are halved before normalization.
 """
 function bw_centrality(
     G::SimpleGraph,
-    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing,
+    weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing;
     normalized::Bool = true
 )
     if weights !== nothing
@@ -191,7 +191,7 @@ function bw_centrality(
     else
         dg, directed_weights = SimpleDiGraph(G), nothing
     end
-    bc = bw_centrality(dg, directed_weights, false)
+    bc = bw_centrality(dg, directed_weights; normalized=false)
     bc ./= 2  # each undirected pair (s,t) counted in both directions
     n = nv(G)
     if normalized && n > 2
