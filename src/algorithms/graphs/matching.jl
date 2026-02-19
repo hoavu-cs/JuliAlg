@@ -2,7 +2,10 @@ using JuMP
 using HiGHS
 using Graphs
 
-function weighted_bipartite_matching(G::SimpleGraph, L::Vector{Int}, R::Vector{Int}, weights::Dict{Tuple{Int, Int}, Float64}) 
+function weighted_bipartite_matching(
+    G::SimpleGraph, L::Vector{Int}, 
+    R::Vector{Int}; 
+    weights::Dict{Tuple{Int, Int}, Float64} = Dict{Tuple{Int, Int}, Float64}()) 
 
     # check L and R are disjoint and cover all vertices
     n = nv(G)
@@ -38,8 +41,8 @@ function weighted_bipartite_matching(G::SimpleGraph, L::Vector{Int}, R::Vector{I
 
     @variable(model, 0 ≤ x[E] ≤ 1)
 
-    # maching constraints
-    for v ∈ 1:n
+    # matching constraints
+    for v ∈ vertices(G)
         if v ∈ Lset
             @constraint(model, sum(x[(v, u)] for u in neighbors(G, v) if (v, u) in E) <= 1)
         else
@@ -53,4 +56,4 @@ function weighted_bipartite_matching(G::SimpleGraph, L::Vector{Int}, R::Vector{I
     return objective_value(model), [(u, v) for (u, v) in E if value(x[(u, v)]) ≥ 1- 1e-6]
 end
 
-precompile(weighted_bipartite_matching, (SimpleGraph, Vector{Int}, Vector{Int}, Dict{Tuple{Int, Int}, Float64}))
+precompile(weighted_bipartite_matching, (SimpleGraph, Vector{Int}, Vector{Int}))

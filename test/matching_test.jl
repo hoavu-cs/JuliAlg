@@ -69,7 +69,7 @@ end
             g = SimpleGraph(3)
             add_edge!(g, 1, 3)
             @test_throws ErrorException weighted_bipartite_matching(
-                g, [1, 2], [2, 3], Dict{Tuple{Int,Int},Float64}()
+                g, [1, 2], [2, 3]
             )
         end
 
@@ -77,7 +77,7 @@ end
             g = SimpleGraph(4)
             add_edge!(g, 1, 3)
             @test_throws ErrorException weighted_bipartite_matching(
-                g, [1, 2], [3], Dict{Tuple{Int,Int},Float64}()  # vertex 4 missing
+                g, [1, 2], [3]  # vertex 4 missing
             )
         end
     end
@@ -90,7 +90,7 @@ end
         L = [1, 2]; R = [3, 4]
         weights = Dict{Tuple{Int,Int},Float64}()
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 0.0 atol=1e-6
         @test isempty(matching)
     end
@@ -101,7 +101,7 @@ end
         L = [1]; R = [2]
         weights = Dict((1, 2) => 7.5)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 7.5 atol=1e-6
         @test length(matching) == 1
         @test (1, 2) in matching
@@ -115,7 +115,7 @@ end
         L = [1]; R = [2, 3]
         weights = Dict((1, 2) => 3.0, (1, 3) => 7.0)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 7.0 atol=1e-6
         @test length(matching) == 1
         @test (1, 3) in matching
@@ -128,7 +128,7 @@ end
         L = [1, 2]; R = [3, 4]
         weights = Dict((1, 3) => 5.0, (2, 4) => 3.0)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 8.0 atol=1e-6
         @test Set(matching) == Set([(1, 3), (2, 4)])
     end
@@ -141,7 +141,7 @@ end
         L = [1, 2]; R = [3, 4]
         weights = Dict((1, 3) => 10.0, (2, 3) => 8.0, (2, 4) => 3.0)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 13.0 atol=1e-6
         @test Set(matching) == Set([(1, 3), (2, 4)])
     end
@@ -156,7 +156,7 @@ end
         L = [1, 2]; R = [3, 4]
         weights = Dict((1, 3) => 4.0, (1, 4) => 1.0, (2, 3) => 2.0, (2, 4) => 6.0)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 10.0 atol=1e-6
         @test Set(matching) == Set([(1, 3), (2, 4)])
         @test is_valid_matching(matching, Set(L), Set(R))
@@ -185,7 +185,7 @@ end
             (3, 4) => 1.0, (3, 5) => 7.0, (3, 6) => 2.0,
         )
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 15.0 atol=1e-6
         @test Set(matching) == Set([(1, 4), (2, 6), (3, 5)])
         @test is_valid_matching(matching, Set(L), Set(R))
@@ -198,7 +198,7 @@ end
         L = [1, 2, 3]; R = [4, 5]
         weights = Dict((1, 4) => 1.0, (2, 4) => 9.0, (3, 5) => 5.0)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         # Optimal: (2,4)=9 + (3,5)=5 = 14
         @test val ≈ 14.0 atol=1e-6
         @test Set(matching) == Set([(2, 4), (3, 5)])
@@ -212,7 +212,7 @@ end
         L = [1, 2]; R = [3, 4, 5]
         weights = Dict{Tuple{Int,Int},Float64}()
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         # Maximum matching has 2 edges (limited by |L|)
         @test val ≈ 2.0 atol=1e-6
         @test length(matching) == 2
@@ -226,7 +226,7 @@ end
         # Only specify (1,4)=5.0; others default to 1.0
         weights = Dict((1, 4) => 5.0)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         # Options: (1,4)=5 + (2,3)=1 = 6  vs  (1,3)=1 alone = 1
         @test val ≈ 6.0 atol=1e-6
         @test Set(matching) == Set([(1, 4), (2, 3)])
@@ -240,7 +240,7 @@ end
         # Weight stored with R-vertex first
         weights = Dict((2, 1) => 9.0)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 9.0 atol=1e-6
         @test length(matching) == 1
     end
@@ -254,7 +254,7 @@ end
         L = [1, 2]; R = [3, 4]
         weights = Dict((1, 3) => 4.0)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 4.0 atol=1e-6
         @test Set(matching) == Set([(1, 3)])
     end
@@ -272,7 +272,7 @@ end
             end
         end
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         # Matching must be valid
         @test is_valid_matching(matching, Set(L), Set(R))
         # Every returned edge must exist in G
@@ -294,7 +294,7 @@ end
             weights[(u, v)] = round(rand() * 10.0, digits=2)
         end
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         bf_val, _ = bf_max_weight_matching(g, L, R, weights)
 
         @test val ≈ bf_val atol=1e-6
@@ -314,7 +314,7 @@ end
             end
         end
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         bf_val, _ = bf_max_weight_matching(g, L, R, weights)
 
         @test val ≈ bf_val atol=1e-6
@@ -333,7 +333,7 @@ end
         # Optimal: match diagonal (1,6)=10,(2,7)=20,(3,8)=30,(4,9)=40,(5,10)=50 = 150
         # vs any other permutation that loses the diagonal gets far less
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 150.0 atol=1e-6
         @test Set(matching) == Set([(i, i + 5) for i in 1:5])
         @test is_valid_matching(matching, Set(L), Set(R))
@@ -351,7 +351,7 @@ end
         R = [4, 5, 6, 7]
         weights = Dict((1, 4) => 0.5, (1, 6) => 0.3, (2, 4) => 0.4, (2, 7) => 0.1, (3, 5) => 0.7, (3, 7) => 0.2)
 
-        val, matching = weighted_bipartite_matching(g, L, R, weights)
+        val, matching = weighted_bipartite_matching(g, L, R; weights)
         @test val ≈ 0.4 + 0.3 + 0.7 atol=1e-6
         @test Set(matching) == Set([(1, 6), (2, 4), (3, 5)])
     end

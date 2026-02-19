@@ -52,7 +52,7 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
 | `densest_at_most_k_subgraph(G, k)` | Densest At-Most-k Subgraph | Degree-based pruning + brute force | Heuristic |
 | `k_core_decomposition(G)` | K-Core Decomposition | Iterative peeling | Exact, O(m) |
 | `bw_centrality(G, weights; normalized)` | Betweenness Centrality | Brandes' algorithm (BFS / Dijkstra) | Exact, O(nm) / O(nm + n² log n) |
-| `weighted_bipartite_matching(G, L, R, weights)` | Maximum Weight Bipartite Matching | LP relaxation (totally unimodular) | Exact |
+| `weighted_bipartite_matching(G, L, R; weights)` | Maximum Weight Bipartite Matching | LP relaxation (totally unimodular) | Exact |
 
 `pagerank`, `bw_centrality`, `influence_maximization_ic`, and `simulate_ic` accept both directed (`SimpleDiGraph`) and undirected (`SimpleGraph`) graphs. For weighted undirected graphs, ensure `weights[(u,v)] == weights[(v,u)]` for all edges.
 
@@ -211,11 +211,11 @@ weights = Dict(
 )
 
 L = [1, 2, 3]; R = [4, 5, 6]
-val, matching = weighted_bipartite_matching(g, L, R, weights)
+val, matching = weighted_bipartite_matching(g, L, R; weights)
 # val = 15.0, matching = [(1,4), (2,6), (3,5)]
 
-# Unspecified edge weights default to 1.0 (maximum cardinality matching)
-val, matching = weighted_bipartite_matching(g, L, R, Dict{Tuple{Int,Int},Float64}())
+# Omit weights for maximum cardinality matching (all edge weights default to 1.0)
+val, matching = weighted_bipartite_matching(g, L, R)
 ```
 
 ### Densest Subgraph
