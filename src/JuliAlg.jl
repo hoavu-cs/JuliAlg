@@ -12,7 +12,8 @@ export check_graph_integrity,
        densest_subgraph,
        k_core_decomposition,
        pagerank,
-       bw_centrality
+       bw_centrality,
+       weighted_bipartite_matching
 
 include("algorithms/combinatorial/knapsack.jl")
 include("algorithms/combinatorial/bin_packing.jl")
@@ -25,5 +26,6 @@ include("algorithms/graphs/densest_subgraph.jl")
 include("algorithms/graphs/k_core.jl")
 include("algorithms/graphs/pagerank.jl")
 include("algorithms/graphs/centrality.jl")
+include("algorithms/graphs/matching.jl")
 
 end

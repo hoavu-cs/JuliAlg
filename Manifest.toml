@@ -2,7 +2,7 @@
 
 julia_version = "1.12.4"
 manifest_format = "2.0"
-project_hash = "9d5ff32e64f19fc208a3381aedae7227334b0ef6"
+project_hash = "e7bbe8ffbf88959ca6cd178e024b4f4913e2af81"
 
 [[deps.ArnoldiMethod]]
 deps = ["LinearAlgebra", "Random", "StaticArrays"]
@@ -140,6 +140,18 @@ git-tree-sha1 = "c00a68bafabb86a79b88d82b400dcecf653450f7"
 uuid = "06909019-6f44-4949-96fc-b9d9aaa02889"
 version = "0.1.1"
 
+[[deps.HiGHS]]
+deps = ["HiGHS_jll", "LinearAlgebra", "MathOptIIS", "MathOptInterface", "OpenBLAS32_jll", "PrecompileTools", "SparseArrays"]
+git-tree-sha1 = "900d431a604b096953437855a3d5fd03a18c3a6c"
+uuid = "87dc4568-4c63-4d18-b0c0-bb2238e4078b"
+version = "1.21.1"
+
+[[deps.HiGHS_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Zlib_jll", "libblastrampoline_jll"]
+git-tree-sha1 = "621d773f277b9eadac7e049eaa6418af65c7b9d7"
+uuid = "8fd58aa0-07eb-5a78-9b36-339c94fd15ea"
+version = "1.13.1+0"
+
 [[deps.Inflate]]
 git-tree-sha1 = "d1b1b796e47d94588b3757fe84fbf65a5ec4a80d"
 uuid = "d25df0c9-e2be-5dd7-82c8-3ad0b3e990b9"
@@ -262,6 +274,12 @@ deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
 
+[[deps.MathOptIIS]]
+deps = ["MathOptInterface"]
+git-tree-sha1 = "12f262200198606174e28c59da634e9d9da839ed"
+uuid = "8c4f8055-bd93-4160-a86b-a0c04941dbff"
+version = "0.1.2"
+
 [[deps.MathOptInterface]]
 deps = ["BenchmarkTools", "CodecBzip2", "CodecZlib", "ForwardDiff", "JSON", "LinearAlgebra", "MutableArithmetics", "NaNMath", "OrderedCollections", "PrecompileTools", "Printf", "SparseArrays", "SpecialFunctions", "Test"]
 git-tree-sha1 = "7fb98657926ccb4de8f9bb96cda453700ca39a8b"
@@ -294,6 +312,12 @@ version = "1.17.0"
 
     [deps.OffsetArrays.weakdeps]
     Adapt = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
+
+[[deps.OpenBLAS32_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "46cce8b42186882811da4ce1f4c7208b02deb716"
+uuid = "656ef2d0-ae68-5445-9ca0-591084a874a2"
+version = "0.3.30+0"
 
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]

@@ -12,4 +12,5 @@ using JuliAlg
     include("k_core_test.jl")
     include("pagerank_test.jl")
     include("centrality_test.jl")
+    include("matching_test.jl")
 end
