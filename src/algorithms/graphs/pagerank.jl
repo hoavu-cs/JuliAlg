@@ -135,10 +135,24 @@ function pagerank(
 end
 
 """
-    pagerank(G::SimpleGraph, weights=nothing; α=0.85, maxiter=100, tol=1e-6)
+    pagerank(G::SimpleGraph, weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing} = nothing; α::Float64 = 0.85, maxiter::Int = 100, tol::Float64 = 1e-6)
 
+Compute PageRank scores for all vertices of an undirected graph.
+
+# Arguments
+- `G::SimpleGraph`: An undirected graph (converted to bidirectional directed graph internally).
+- `weights::Union{Dict{Tuple{Int, Int}, Float64}, Nothing}`: Optional dictionary mapping edges to weights.
+- `α::Float64`: Damping factor (default 0.85).
+- `maxiter::Int`: Maximum number of iterations (default 100).
+- `tol::Float64`: Convergence tolerance (default 1e-6).
+
+# Returns
+- `Vector{Float64}`: Vector of PageRank scores (sums to 1).
+
+# Description
 Undirected-graph overload: converts `G` to a bidirectional directed graph
-and delegates to the directed `pagerank`.
+(each undirected edge becomes two directed edges) and delegates to the
+directed `pagerank`.
 """
 function pagerank(
     G::SimpleGraph,
