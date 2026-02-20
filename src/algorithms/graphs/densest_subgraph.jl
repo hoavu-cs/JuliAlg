@@ -3,7 +3,26 @@ using Combinatorics
 using SparseArrays
 
 """
-    Create auxiliary graph H for the Goldberg algorithm.
+    create_aux_graph(G::AbstractGraph, λ::Float64)
+
+Create an auxiliary graph H for the Goldberg densest subgraph algorithm.
+
+# Arguments
+- `G::AbstractGraph`: The input undirected graph.
+- `λ::Float64`: The density parameter λ for the max flow formulation.
+
+# Returns
+- A tuple `(H, cap, s, t)` containing:
+  - `H::DiGraph`: The auxiliary directed graph with n+2 vertices.
+  - `cap::SparseMatrixCSC`: Capacity matrix for the flow network.
+  - `s::Int`: Source vertex (n+1).
+  - `t::Int`: Sink vertex (n+2).
+
+# Description
+The auxiliary graph is constructed for the binary search on λ in Goldberg's algorithm.
+The source is connected to all original vertices with capacity equal to their degree,
+and all vertices are connected to the sink with capacity 2λ. Original edges have
+capacity 1 in both directions.
 """
 function create_aux_graph(G::AbstractGraph, λ::Float64)
     n = nv(G)
@@ -31,7 +50,17 @@ function create_aux_graph(G::AbstractGraph, λ::Float64)
 end
 
 """
-    Compute the density of a subgraph S in G, defined as |E(S)|/|S|.
+    density(G::AbstractGraph, S::Vector{Int})
+
+Compute the density of a subgraph S in G, defined as |E(S)|/|S|.
+
+# Arguments
+- `G::AbstractGraph`: The input undirected graph.
+- `S::Vector{Int}`: A vector of vertex indices representing the subgraph.
+
+# Returns
+- `Float64`: The density of the subgraph, i.e., the ratio of edges to vertices.
+  Returns 0.0 if S is empty.
 """
 function density(G::AbstractGraph, S::Vector{Int})
     if isempty(S)
@@ -53,11 +82,27 @@ function density(G::AbstractGraph, S::Vector{Int})
 end
 
 """
-    Goldberg algorithm for densest subgraph. 
+    densest_subgraph(G::AbstractGraph, num_iterations::Int = 40; algorithm::Symbol = :goldberg)
 
-    Returns (best_S, best_density)
-    - best_S: vertex ids (1..n) of the best subgraph found
-    - best_density: density(best_S) = |E(S)|/|S|
+Find the densest subgraph in an undirected graph using Goldberg's algorithm.
+
+# Arguments
+- `G::AbstractGraph`: The input undirected graph.
+- `num_iterations::Int`: Maximum number of iterations for binary search (default: 40).
+- `algorithm::Symbol`: Algorithm to use (currently only `:goldberg` is supported).
+
+# Returns
+- `Tuple{Vector{Int}, Float64}`: A tuple containing:
+  - `best_S`: Vector of vertex indices forming the densest subgraph.
+  - `best_density`: The density of the found subgraph (|E(S)|/|S|).
+
+# Throws
+- `ArgumentError`: If `G` is a directed graph.
+
+# Description
+Goldberg's algorithm uses a max-flow formulation with binary search to find the
+densest subgraph. It creates an auxiliary flow network and uses min-cut to
+determine the optimal subgraph for each density value λ.
 """
 function densest_subgraph(G::AbstractGraph, num_iterations::Int = 40, algorithm=:goldberg)
     if is_directed(G)
@@ -96,8 +141,25 @@ function densest_subgraph(G::AbstractGraph, num_iterations::Int = 40, algorithm=
 end
 
 """
-    Charikar's peeling algorithm for densest subgraph. 
-    1/2-approximation.
+    densest_subgraph_peeling(G::AbstractGraph)
+
+Find the densest subgraph using Charikar's peeling algorithm (1/2-approximation).
+
+# Arguments
+- `G::AbstractGraph`: The input undirected graph.
+
+# Returns
+- `Tuple{Vector{Int}, Float64}`: A tuple containing:
+  - `best_S`: Vector of vertex indices forming the densest subgraph.
+  - `best_density`: The density of the found subgraph (|E(S)|/|S|).
+
+# Throws
+- `ArgumentError`: If `G` is a directed graph.
+
+# Description
+Charikar's peeling algorithm iteratively removes vertices with minimum degree,
+tracking the density at each step. This provides a 1/2-approximation to the
+densest subgraph problem. The algorithm runs in O(n+m) time.
 """
 function densest_subgraph_peeling(G::AbstractGraph)
     if is_directed(G)
@@ -147,16 +209,27 @@ function densest_subgraph_peeling(G::AbstractGraph)
 end
 
 """
-    Densest at-most-k-subgraph problem: find a subset S of vertices with |S| ≤ k that maximizes density(S) = |E(S)|/|S|.
-    We try all subsets of size ≤ k and pick the one with the highest density. 
-    However, one can prune the original graph and speed up the search as follows.
+    densest_at_most_k_subgraph(G::AbstractGraph, k::Int)
 
-    Iteratively remove vertices whose current degree is smallest until only k vertices remain. Let the remaining graph be H.
-    Starting with d' = density(H), we iteratively remove nodes with the smallest degree in H until no node remains.
-    In the process, we update d' to keep track of the maximum density seen so far. 
-    We iteratively remove vertices whose current degree is strictly smallerthan d′, until no such vertex remains.
-    Claim: Any vertex removed by this procedure cannot belong to an optimal densest
-    subgraph H⋆.
+Find a subset S of vertices with |S| ≤ k that maximizes density(S) = |E(S)|/|S|.
+
+# Arguments
+- `G::AbstractGraph`: The input undirected graph.
+- `k::Int`: Maximum size of the subgraph.
+
+# Returns
+- `Tuple{Vector{Int}, Float64}`: A tuple containing:
+  - `best_S`: Vector of vertex indices forming the densest subgraph with at most k vertices.
+  - `best_density`: The density of the found subgraph.
+
+# Throws
+- `ArgumentError`: If `G` is a directed graph.
+
+# Description
+The algorithm uses a combination of pruning and brute force:
+1. Iteratively remove vertices with minimum degree until only k vertices remain.
+2. Remove vertices with degree strictly smaller than the current best density.
+3. Perform brute force search on the remaining graph.
 """
 function densest_at_most_k_subgraph(G::AbstractGraph, k::Int)
     if is_directed(G)
