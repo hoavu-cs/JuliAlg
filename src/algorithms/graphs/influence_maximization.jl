@@ -1,10 +1,23 @@
 using Graphs
 
 """
-    Simulate the Independent Cascade (IC) model of influence spread.
-    Given a directed graph `g`, edge influence probabilities `weights`,
-    and an initial seed set `seed_set`, runs `num_simulations` simulations
-    and returns the average number of activated nodes.
+    simulate_ic(g::AbstractGraph, weights::Dict{Tuple{Int, Int}, Float64}, seed_set::Vector{Int}; n_simulations::Int = 10_000)
+
+Simulate the Independent Cascade (IC) model of influence spread.
+
+# Arguments
+- `g::AbstractGraph`: A directed graph representing the influence network.
+- `weights::Dict{Tuple{Int, Int}, Float64}`: Dictionary mapping edges to influence probabilities.
+- `seed_set::Vector{Int}`: Initial set of activated nodes (seed nodes).
+- `n_simulations::Int`: Number of Monte Carlo simulations to run (default: 10,000).
+
+# Returns
+- `Float64`: The average number of activated nodes across all simulations.
+
+# Description
+The Independent Cascade model works as follows: starting from the seed set, each newly
+activated node has a single chance to activate each of its neighbors with the given
+probability. This process continues until no new nodes are activated.
 """
 function simulate_ic(
     g::AbstractGraph,
@@ -41,12 +54,27 @@ end
 
 
 """
-    Influence Maximization in Directed Graphs in the Independent Cascade Model.
-    Given a directed graph `g`, edge influence probabilities `weights`,
-    and a budget `k`, selects `k` nodes to maximize the expected spread of influence.
-    n_simulations_small is used for a quick estimate of marginal gain during the greedy selection,
-    while n_simulations is used for a more accurate estimate of the final spread.
-    Returns a ≈ (1 - 1/e) approximate solution using a greedy algorithm.
+    influence_maximization_ic(g::AbstractGraph, weights::Dict{Tuple{Int, Int}, Float64}, k::Int; n_simulations_small::Int = 1_000, n_simulations::Int = 10_000)
+
+Find the k most influential nodes in a directed graph using the Independent Cascade model.
+
+# Arguments
+- `g::AbstractGraph`: A directed graph representing the influence network.
+- `weights::Dict{Tuple{Int, Int}, Float64}`: Dictionary mapping edges to influence probabilities.
+- `k::Int`: Number of seed nodes to select.
+- `n_simulations_small::Int`: Number of simulations for quick marginal gain estimation (default: 1,000).
+- `n_simulations::Int`: Number of simulations for accurate final spread estimation (default: 10,000).
+
+# Returns
+- `Tuple{Vector{Int}, Float64}`: A tuple containing:
+  - `solution`: Vector of k node indices forming the seed set.
+  - `final_spread`: The expected number of activated nodes.
+
+# Description
+This function uses a greedy algorithm to select k seed nodes that maximize the expected
+influence spread under the Independent Cascade model. It provides a (1 - 1/e) approximation
+to the optimal solution. The algorithm uses fewer simulations during the greedy selection
+phase for efficiency, and more simulations for the final spread estimate.
 """
 function influence_maximization_ic(
     g::AbstractGraph,
@@ -96,8 +124,20 @@ end
 
 
 """
-    simulate_ic(g::SimpleGraph, weights, seed_set, n_simulations) -> Float64
+    simulate_ic(g::SimpleGraph, weights::Dict{Tuple{Int, Int}, Float64}, seed_set::Vector{Int}; n_simulations::Int = 10_000)
 
+Simulate the Independent Cascade model on an undirected graph.
+
+# Arguments
+- `g::SimpleGraph`: An undirected graph (converted to bidirectional directed graph internally).
+- `weights::Dict{Tuple{Int, Int}, Float64}`: Dictionary mapping edges to influence probabilities.
+- `seed_set::Vector{Int}`: Initial set of activated nodes (seed nodes).
+- `n_simulations::Int`: Number of Monte Carlo simulations to run (default: 10,000).
+
+# Returns
+- `Float64`: The average number of activated nodes across all simulations.
+
+# Description
 Undirected-graph overload: converts `g` to a bidirectional directed graph
 (each undirected edge becomes two directed edges) and delegates to the
 directed `simulate_ic`.
@@ -114,8 +154,23 @@ end
 
 
 """
-    influence_maximization_ic(g::SimpleGraph, weights, k, ...) -> (solution, spread)
+    influence_maximization_ic(g::SimpleGraph, weights::Dict{Tuple{Int, Int}, Float64}, k::Int; n_simulations_small::Int = 1_000, n_simulations::Int = 10_000)
 
+Find the k most influential nodes in an undirected graph using the Independent Cascade model.
+
+# Arguments
+- `g::SimpleGraph`: An undirected graph (converted to bidirectional directed graph internally).
+- `weights::Dict{Tuple{Int, Int}, Float64}`: Dictionary mapping edges to influence probabilities.
+- `k::Int`: Number of seed nodes to select.
+- `n_simulations_small::Int`: Number of simulations for quick marginal gain estimation (default: 1,000).
+- `n_simulations::Int`: Number of simulations for accurate final spread estimation (default: 10,000).
+
+# Returns
+- `Tuple{Vector{Int}, Float64}`: A tuple containing:
+  - `solution`: Vector of k node indices forming the seed set.
+  - `final_spread`: The expected number of activated nodes.
+
+# Description
 Undirected-graph overload: converts `g` to a bidirectional directed graph
 (each undirected edge becomes two directed edges) and delegates to the
 directed `influence_maximization_ic`.
