@@ -54,6 +54,8 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
 | `bw_centrality(G, weights; normalized)` | Betweenness Centrality | Brandes' algorithm (BFS / Dijkstra) | Exact, O(nm) / O(nm + n² log n) |
 | `weighted_bipartite_matching(G, L, R; weights)` | Maximum Weight Bipartite Matching | LP relaxation (totally unimodular) | Exact |
 
+> **Note:** Some functions (`pagerank`, `bw_centrality`, `influence_maximization_ic`, `simulate_ic`) have the same names as functions in Graphs.jl. To use JuliAlg's implementation, call them with the module prefix (e.g., `JuliAlg.pagerank(...)`).
+
 `pagerank`, `bw_centrality`, `influence_maximization_ic`, and `simulate_ic` accept both directed (`SimpleDiGraph`) and undirected (`SimpleGraph`) graphs. For weighted undirected graphs, ensure `weights[(u,v)] == weights[(v,u)]` for all edges.
 
 ## Usage
@@ -125,7 +127,7 @@ add_edge!(g, 3, 4); add_edge!(g, 4, 5)
 weights = Dict((src(e), dst(e)) => 0.5 for e in edges(g))
 k = 2
 
-seeds, spread = influence_maximization_ic(g, weights, k)
+seeds, spread = JuliAlg.influence_maximization_ic(g, weights, k)
 ```
 
 ### PageRank
@@ -136,23 +138,23 @@ using Graphs, JuliAlg
 # Directed, unweighted
 g = SimpleDiGraph(4)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 1); add_edge!(g, 2, 4)
-r = pagerank(g)                       # α=0.85
-r = pagerank(g, nothing; α=0.9)      # custom damping factor
-r = pagerank(g, nothing; tol=1e-10)  # stricter convergence
+r = JuliAlg.pagerank(g)                       # α=0.85
+r = JuliAlg.pagerank(g, nothing; α=0.9)      # custom damping factor
+r = JuliAlg.pagerank(g, nothing; tol=1e-10)  # stricter convergence
 
 # Directed, weighted
 weights = Dict((1,2) => 2.0, (2,3) => 1.0, (3,1) => 1.0, (2,4) => 3.0)
-r = pagerank(g, weights)
+r = JuliAlg.pagerank(g, weights)
 
 # Undirected, unweighted
 g = SimpleGraph(4)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 4, 1)
-r = pagerank(g)
+r = JuliAlg.pagerank(g)
 
 # Undirected, weighted (weights must be symmetric: w[(u,v)] == w[(v,u)])
 weights = Dict((1,2)=>2.0, (2,1)=>2.0, (2,3)=>1.0, (3,2)=>1.0,
                (3,4)=>3.0, (4,3)=>3.0, (4,1)=>1.0, (1,4)=>1.0)
-r = pagerank(g, weights)
+r = JuliAlg.pagerank(g, weights)
 ```
 
 ### Betweenness Centrality
@@ -163,22 +165,22 @@ using Graphs, JuliAlg
 # Directed, unweighted
 g = SimpleDiGraph(4)
 add_edge!(g, 1, 2); add_edge!(g, 2, 3); add_edge!(g, 3, 4); add_edge!(g, 1, 4)
-bc = bw_centrality(g)                             # normalized
-bc = bw_centrality(g, nothing; normalized=false)  # unnormalized
+bc = JuliAlg.bw_centrality(g)                             # normalized
+bc = JuliAlg.bw_centrality(g, nothing; normalized=false)  # unnormalized
 
 # Directed, weighted
 weights = Dict((1,2)=>2.0, (2,3)=>1.0, (3,4)=>3.0, (1,4)=>10.0)
-bc = bw_centrality(g, weights)
+bc = JuliAlg.bw_centrality(g, weights)
 
 # Undirected, unweighted
 g = SimpleGraph(5)
 for i in 1:4; add_edge!(g, i, i+1); end
-bc = bw_centrality(g)
+bc = JuliAlg.bw_centrality(g)
 
 # Undirected, weighted (weights must be symmetric: w[(u,v)] == w[(v,u)])
 weights = Dict((1,2)=>1.0, (2,1)=>1.0, (2,3)=>2.0, (3,2)=>2.0,
                (3,4)=>1.0, (4,3)=>1.0, (4,5)=>3.0, (5,4)=>3.0)
-bc = bw_centrality(g, weights)
+bc = JuliAlg.bw_centrality(g, weights)
 ```
 
 ### K-Core Decomposition
