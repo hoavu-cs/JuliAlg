@@ -3,6 +3,7 @@ using JuliAlg
 
 @testset "JuliAlg" begin
     include("knapsack_test.jl")
+    include("makespan_test.jl")
     include("bin_packing_test.jl")
     include("interval_scheduling_test.jl")
     include("influence_maximization_test.jl")

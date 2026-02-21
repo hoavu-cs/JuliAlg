@@ -4,6 +4,7 @@ export check_graph_integrity,
        bin_packing,
        exact_knapsack,
        ptas_knapsack,
+       lpt_makespan,
        weighted_interval_scheduling,
        influence_maximization_ic,
        simulate_ic,
@@ -16,6 +17,7 @@ export check_graph_integrity,
        weighted_bipartite_matching
 
 include("algorithms/combinatorial/knapsack.jl")
+include("algorithms/combinatorial/makespan.jl")
 include("algorithms/combinatorial/bin_packing.jl")
 include("algorithms/combinatorial/interval_scheduling.jl")
 include("algorithms/graphs/graph_utils.jl")
