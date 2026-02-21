@@ -7,7 +7,7 @@ A Julia package for combinatorial optimization and graph algorithms. It contains
 
 I also utilize multi-threading for algorithms that can benefit from parallelism. See the benchmarks section for some results. There are some NP-Hard problems with no known polynomial-time approximation. For these, I try to come up with heuristics that help reduce the search space (such as in densest at-most-k-subgraph). Some are dealt with using parameterization.
 
-Claude Code / Copilot is often used to generate documentation and benchmark tools. The core algorithms and implementations are mostly written and optimized by me. 
+Coding agents are often used to generate documentation and benchmark tools. The core algorithms and implementations are mostly written and optimized by me. 
 
 The goal is to use this package internally for my other projects, but I would also be happy if it can be useful to others. Pull requests and contributions are welcome. 
 
@@ -35,6 +35,7 @@ julia --project -e 'using Pkg; Pkg.instantiate()'
 |---|---|---|---|
 | `exact_knapsack(W, weights, values)` | 0/1 Knapsack | Value-based DP | Exact, O(n * sum(values)) |
 | `ptas_knapsack(W, epsilon, weights, values)` | 0/1 Knapsack | Value scaling + DP | (1 - epsilon)-approx |
+| `lpt_makespan(jobs, m)` | Makespan | LPT heuristic | 4/3 + 1/(3m)-approx |
 | `bin_packing(items, bin_capacity)` | Bin Packing | Best-Fit Decreasing | <= (11/9)OPT + 6/9 |
 | `weighted_interval_scheduling(starts, ends, weights)` | Weighted Interval Scheduling | DP + binary search | Exact, O(n log n) |
 | `set_cover(subsets, costs)` | Weighted Set Cover | Greedy | O(ln n)-approx |
@@ -76,6 +77,19 @@ value, items = exact_knapsack(W, weights, values)
 
 # PTAS with epsilon = 0.1
 value, items = ptas_knapsack(W, 0.1, weights, values)
+```
+
+### Makespan
+
+```julia
+using JuliAlg
+
+jobs = [10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0]
+m = 3
+
+makespan, assignments = lpt_makespan(jobs, m)
+# makespan is the maximum load across all m machines
+# assignments[i] gives the machine assigned to job i
 ```
 
 ### Bin Packing
