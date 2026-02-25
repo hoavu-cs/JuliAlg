@@ -8,7 +8,7 @@ if !isempty(ARGS) && ARGS[1] == "--worker"
     g = SimpleDiGraph(3)
     add_edge!(g, 1, 2)
     w = Dict((1, 2) => 0.5)
-    simulate_ic(g, w, [1], 10)
+    simulate_ic(g, w, [1]; n_simulations=10)
 
     times = Float64[]
     for _ in 1:5

@@ -187,7 +187,7 @@ function influence_maximization_ic(
 end
 
 
-precompile(simulate_ic,(SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Vector{Int}, Int))
-precompile(simulate_ic,(SimpleGraph, Dict{Tuple{Int, Int}, Float64}, Vector{Int}, Int))
-precompile(influence_maximization_ic,(SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Int, Int, Int))
-precompile(influence_maximization_ic,(SimpleGraph, Dict{Tuple{Int, Int}, Float64}, Int, Int, Int))
+precompile(simulate_ic,(SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Vector{Int}))
+precompile(simulate_ic,(SimpleGraph, Dict{Tuple{Int, Int}, Float64}, Vector{Int}))
+precompile(influence_maximization_ic,(SimpleDiGraph, Dict{Tuple{Int, Int}, Float64}, Int))
+precompile(influence_maximization_ic,(SimpleGraph, Dict{Tuple{Int, Int}, Float64}, Int))
