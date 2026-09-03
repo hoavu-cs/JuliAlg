@@ -16,13 +16,13 @@ The goal is to use this package internally for my other projects, but I would al
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/<owner>/JuliAlg.jl")
+Pkg.add(url="https://github.com/hoavu-cs/JuliAlg.git")
 ```
 
 Or for local development:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/hoavu-cs/JuliAlg.git
 cd JuliAlg
 julia --project -e 'using Pkg; Pkg.instantiate()'
 ```
